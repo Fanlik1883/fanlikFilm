@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+      
+        <link rel="stylesheet" href="css/film.css?v=0.01">
+        <link rel="stylesheet" href="css/avtoriz.css">
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/cookie.min.js"></script>
+        <script src="/js/avtoriz.js"></script>
+ 
+
+        <script src="cordova.js"></script>
+        <title>Hello World</title>
+    </head>
+    <body>
+        <div class="panel hide" id="panel"><br><br>
+            <label for="year">Год:</label>
+            <select id="year" >
+              <option value="">---</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+              <option value="2019">2019</option>
+              <option value="2018">2018</option>
+              <option value="2017">2017</option>
+              <option value="2016">2016</option>
+              <option value="2015">2015</option>
+              <option value="2014">2014</option>
+              <option value="2013">2013</option>
+              <option value="2012">2012</option>
+              <option value="2011">2011</option>
+              <option value="2010">2010</option>
+              <option value="2009">2009</option>
+              <option value="2008">2008</option>
+              <option value="2007">2007</option>
+              <option value="2006">2006</option>
+              <option value="2005">2005</option>
+              <option value="2004">2004</option>
+              <option value="2003">2003</option>
+              <option value="2002">2002</option>
+              <option value="2001">2001</option>
+              <option value="2000">2000</option>
+            </select>
+            <br>
+            <label for="tag">Жанр:</label>
+            <select id="tag" >
+                    <option value="">---</option>
+                    <option value="аниме">Аниме</option>
+                    <option value="боевик">Боевики</option>
+                    <option value="военн">Военные</option>
+                    <option value="детский">Детские</option>
+                    <option value="документальный">Документальный</option>
+                    <option value="драм">Драмы</option>
+                    <option value="мелодрам">Мелодрама</option>
+                    <option value="комедия">Комедии</option>
+                    <option value="криминал">Криминал</option>
+                    <option value="мультфильм">Мультфильм</option>
+                    <option value="приключения">Приключения</option>
+                    <option value="семейный">Семейный</option>
+                    <option value="спорт">Спортивные</option>
+                    <option value="триллер">Триллеры</option>
+                    <option value="ужас">Ужасы</option>
+                    <option value="фантаст">Фантастика</option>
+                    <option value="фэнтези">Фэнтези</option>
+                    <option value="для взрослых">Для взрослых</option>
+                    <option value="мюзикл">Мюзикл</option>
+                    <option value="реальное ТВ">Реальное ТВ</option>
+                    <option value="музыка">Музыка</option>
+            </select>
+            <br>
+        <input type="text" id="TextSerch" width="20"><img src='img/menu.png' onclick="GoSearch();" width='50' height='50'/><br>
+        <label for="Kiniopoisk">Найти по ссылке кинопоиска:</label><img src='img/menu.png' onclick="GoKinopoisk();" width='50' height='50'/>
+        <div id="Avtorization_link"></div>    
+    </div>
+        <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;"><img src='img/menu.png' onclick="SettingsPanelHide();" width='50' height='50'/></div>
+        <div width="19%" style="position: fixed; right: 10px;top: 60px;z-index: 10000;"><a href="favorites.html" ><img src='img/favorite.png' width='50' height='50'/></a></div>
+        
+        <div id="ViewPort" >
+            
+         </div>
+         <div id="load-more-button"></div>
+
+<!------------ Форма добавления Пользователя  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+<div class="dm-overlay" id="Registration_Head">
+    <div class="dm-table">
+        <div class="dm-cell">
+            <div class="dm-modal">
+
+                <h3>Регистрация пользователя</h3>Логин:<input id='Registration_login' type='text' size='40'><br>
+                Пароль:<input id='Registration_password' type='password' size='40'><br>
+                <br><a href='#' onclick='RegistrationPost()'>Добавить</a>
+                <a href='#' onclick='AddUser_ShowHide()'>Закрыть</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
+
+
+<!------------ Форма добавления Авторизации  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+<div class="dm-overlay" id="Avtorization_Head">
+    <div class="dm-table">
+        <div class="dm-cell">
+            <div class="dm-modal">
+                <h3>Авторизация</h3>Логин:<input id='Avtorization_login' type='text' size='40'><br>
+                Пароль:<input id='Avtorization_password' type='password' size='40'><br>
+                <br><a href='#' onclick='AvtorizationPost()'>Войти</a>
+                <a href='#' onclick='Avtorization_ShowHide()'>Закрыть</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ххххххххххххххххххххх Форма добавления Пользователя   ххххххххххххххххххххххххххххххххххххххххх -->
+
+
+
+
+         <script src="/js/index.js?v=0.001"></script>
+  
+    </body>
+</html>

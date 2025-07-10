@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.fanlik.film" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Фильмы</name>
+    <description>Просмотр фильмов</description>
+    <author email="student1883@mail.ru" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <access origin="*"></access>
+    <universal-links>
+         <host name="allfilmbook.ru" scheme="https" event="open" />
+    </universal-links>
+
+
+    <platform name="android">    
+        <allow-intent href="market:*" />
+        <icon src="www/img/logo.png" />
+        <custom-config-file target="AndroidManifest.xml" parent="/*">
+             <uses-permission android:name="android.permission.INTERNET" />
+               
+             
+        </custom-config-file>
+
+    </platform>
+</widget>

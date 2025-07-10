@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+      
+        <link rel="stylesheet" href="css/film.css?v=0.01">
+        <script src="/js/jquery.min.js"></script>
+
+   
+
+        <script src="cordova.js"></script>
+
+        <title>Hello World</title>
+    </head>
+    <body>
+
+        <div id="ViewPort">
+            
+         </div>
+
+ 
+         <script>
+            kinopoiskSimilars();
+            function kinopoiskSimilars() {
+                let params = new URLSearchParams(document.location.search);
+                fins = params.get('id');
+                var req_out = document.getElementById('ViewPort');
+                $.ajaxSetup({timeout: 10000});
+                var finds = '';
+                $.get('https://allfilmbook.ru/API/kinopoisk/get/similars/', {id: fins}).success(function (data) {
+            
+                    json = JSON.parse(data);
+                    if (json.length === 0) {
+            // Display a placeholder image
+            req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
+        } else {
+                    json.forEach(function (item, i, json) {
+                        let liLast = document.createElement('div');
+                        liLast.className = "MovieCardFace";
+                        liLast.id = 'Movie_'+item['filmId'];
+                        liLast.addEventListener('click', function() { showDesc(item['filmId']); });
+                      
+                        liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['filmId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
+                        liLast.innerHTML += "<div class='short-infobar' id='name_"+item['filmId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
+                        liLast.innerHTML += "<div class='overlay' id='overlay_"+item['filmId']+"'></div>";
+                        liLast.innerHTML += "<div class='desc hide' id='desc_"+item['filmId']+"' ></div?";
+                        liLast.innerHTML +='</div>';
+
+
+
+                        ViewPort.append(liLast); // вставить liLast в конец <ol>			
+                    })
+                }
+                })
+            
+            }
+            
+
+function GetDesc(n){
+
+    $.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
+		json = JSON.parse(data);
+        if (json.length === 0) {
+                        req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
+                    } else {
+                        
+        var req_out = document.getElementById('desc_'+n);
+		json.forEach(function (item, i, json) {
+
+            req_out.innerHTML="<h1>"+item['nameRu']+
+            "<a href='torrent.html?q="+item['nameRu']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
+            "<h1>"+item['nameOriginal']+
+            "<a href='torrent.html?q="+item['nameOriginal']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
+            '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
+            '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
+            '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
+            '<img  src=\'img/add-icon-png-2468.png\' id="add_'+item['kinopoiskId']+'" onclick="addFavorites('+item['kinopoiskId']+')" class=\'bottons\'>'+
+            "<br>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
+            req_out.innerHTML +='</div>';
+            document.getElementById('overlay_'+item['kinopoiskId']).innerHTML= item['ratingKinopoisk']+" "+item['ratingImdb'];
+            document.getElementById("desc_"+item['kinopoiskId']).classList.remove("hide");
+            document.getElementById("desc_"+item['kinopoiskId']).classList.toggle("show");
+            document.getElementById("name_"+item['kinopoiskId']).classList.toggle("hide");
+		})
+
+    }
+
+
+
+	})
+
+
+}
+
+
+function showDesc (id){
+  
+    if(document.getElementById("desc_"+id).innerHTML==''){
+        GetDesc(id);
+    }else {
+
+        if(document.getElementById("desc_"+id).classList[1]=="hide"){
+            document.getElementById("desc_"+id).classList.remove("hide")
+            document.getElementById("desc_"+id).classList.toggle("show")
+            document.getElementById("name_"+id).classList.toggle("hide")
+
+        } else {
+            document.getElementById("desc_"+id).classList.remove("show")
+            document.getElementById("desc_"+id).classList.toggle("hide")
+            document.getElementById("name_"+id).classList.remove("hide")
+
+
+        }
+}
+}
+
+
+
+
+
+
+</script>
+    </body>
+</html>

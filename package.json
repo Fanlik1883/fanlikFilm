@@ -1,0 +1,41 @@
+{
+  "name": "io.fanlik.film",
+  "displayName": "Фильмы",
+  "version": "1.0.0",
+  "description": "Просмотр фильмов",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cordova-android": "^13.0.0",
+    "cordova-browser": "^7.0.0",
+    "cordova-clipboard": "^1.3.0",
+    "cordova-plugin-android-permissions": "^1.1.5",
+    "cordova-plugin-device": "^3.0.0",
+    "cordova-plugin-file": "^8.1.3",
+    "cordova-plugin-file-opener2": "^4.0.0",
+    "cordova-plugin-file-transfer": "^2.0.0",
+    "cordova-plugin-inappbrowser": "^6.0.0",
+    "windows": "^0.1.2"
+  },
+  "cordova": {
+    "platforms": [
+      "browser",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-device": {},
+      "cordova-plugin-android-permissions": {},
+      "cordova-clipboard": {},
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-file-opener2": {},
+      "cordova-plugin-inappbrowser": {}
+    }
+  }
+}

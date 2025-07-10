@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.fanlik.reader" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>Fanlik Reader</name>
+    <description>My Reader</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <access origin="*"></access>
+    <universal-links>
+         <host name="allfilmbook.ru" scheme="https" event="open" />
+    </universal-links>
+
+
+    <platform name="android">    
+        <allow-intent href="market:*" />
+        <icon src="www/icons-512.png" />
+        <custom-config-file target="AndroidManifest.xml" parent="/*">
+                <uses-permission android:name="android.permission.INTERNET" />
+                <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+                <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+                <data android:scheme="book" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+        </custom-config-file>
+
+    </platform>
+</widget>

@@ -1,0 +1,11 @@
+{
+    "android": {
+        "release": {
+            "keystore": "lcf.keystore",
+            "storePassword": "Estero17s",
+            "alias": "FanlikFilm",
+            "password" : "Estero17s",
+            "keystoreType": ""
+        }
+    }
+}
