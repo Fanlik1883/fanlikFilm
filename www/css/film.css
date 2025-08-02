@@ -167,3 +167,10 @@ display: block;
   height: 100%;
   background-color: #C6F7A8;
 }
+
+.select{
+  color: rgb(255, 0, 0);
+}
+.green{
+  background-color:  rgba(108, 255, 128, 0.322);
+}

@@ -60,17 +60,11 @@ $.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
     json = JSON.parse(data);
     var req_out = document.getElementById('desc_'+n);
     json.forEach(function (item, i, json) {
-    /*    req_out.innerHTML="<a href=\'torrent.html?q="+item['nameRu']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a>"+ 
-        '<a href="similar.html?id='+item['kinopoiskId']+'"><img src=\'img/similar.png\' class=\'bottons\'>'+
-        '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
-        '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-        "<h1>"+item['nameRu']+"</h1>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
-*/
 
         req_out.innerHTML="<h1>"+item['nameRu']+
-            "<a href='torrent.html?q="+item['nameRu']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
+            "<a href='torrent.html?q="+item['nameRu']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
             "<h1>"+item['nameOriginal']+
-            "<a href='torrent.html?q="+item['nameOriginal']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
+            "<a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
             '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
             '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
             '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
