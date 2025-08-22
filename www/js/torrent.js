@@ -3,7 +3,7 @@ class RejectsClass {
     constructor() { 
       this.finderSelect=document.getElementById("finder");
       this.ApiKeys = { 'Jackett': 'kh2xyu3wngydyxxbg1wa9xtgbozr9a4g', 'Jackett2': 'vz8j4dx3qaxj9uvw4wlaot0b88ad669s' , 'JackettEng': 'f95hvcdjn0r6gexxk3y2n2cd5nzgz85c'}; 
-     }
+    }
    FindJackett(findText,findyear,adressRequest)  {
     var apikey=this.ApiKeys[adressRequest];
      var apiUrl = 'https://allfilmbook.ru/API/'+adressRequest+'/API/v2.0/indexers/all/results?apikey='+apikey+'&Query=' + findText+' '+findyear;
@@ -20,7 +20,7 @@ class RejectsClass {
             var hash = item.Link;
           }                        
           else {
-             hash = item.MagnetUri ?? '';
+             hash = item.MagnetUri ;
           }
           var name = item.Title;
           var seeders = item.Seeders;
@@ -31,19 +31,19 @@ class RejectsClass {
           trackersCheckedFormatted = trackersCheckedFormatted.substring(0, index);
           var size = item.Size;
           var Category = item.Category;
-          var description = item.Description ?? '';
+          var description = item.Description ;
           var sizeGb = (size / (1024 * 1024 * 1024)).toFixed(2);
   
           var outputData = {
             status: 0,
             headData: trackersCheckedFormatted,
-            link: `${hash}`,
+            link: hash,
             description: description,
             name: name,
-            seeders:seeders,
-            leechers:leechers,
-            Category:Category,
-            comments: `${seeders}/${leechers}/${sizeGb}Gb`
+            seeders: seeders,
+            leechers: leechers,
+            Category: Category,
+            comments: seeders+"/"+leechers+"/"+sizeGb+"Gb"
           };
           
           RenderTracker.OutMass.push(outputData); 
@@ -53,6 +53,7 @@ class RejectsClass {
       },
       error: function(error) {
         console.error(error);
+        return null;
       }
     });
   
@@ -73,9 +74,9 @@ class RejectsClass {
       this.OutMass = []; 
       this.ViewOutput=document.getElementById("ViewOutput") 
       AnalisTracker.FilterList.addEventListener('change',this.renderTable);
-      this.FilterTorrent = {'film': ["mp3", "wav", "fb2","flac","jpg","jpeg"],
-
-    }
+      this.platform=cordova.platformId;
+//      this.FilterTorrent = {'film': ["mp3", "wav", "fb2","flac","jpg","jpeg"],
+ //   }
        
       
      }
@@ -116,15 +117,16 @@ class RejectsClass {
                 if (AnalisTracker.FilterList.value.trim().length >1) {
       if (item.name.toLowerCase().includes(AnalisTracker.FilterList.value.toLowerCase())){
   
-              if(magnet==0)   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '" >' + title + '</a></td><td>' + comments + '</td></tr>';
-              if(magnet==1)   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-             }
+              if(magnet==0 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '" >' + title + '</a></td><td>' + comments + '</td></tr>';
+              if(magnet==1 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+              if(RenderTracker.platform ==='browser') finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="'+link+'" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+            }
   
       }else {
   
-  
-                     if(magnet==0)   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-                     if(magnet==1)   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+              if(magnet==0 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+              if(magnet==1 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+              if( RenderTracker.platform ==='browser') finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="'+link+'" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
         }
   
   
