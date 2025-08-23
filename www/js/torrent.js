@@ -114,24 +114,13 @@ class RejectsClass {
               title = AnalisTracker.highlightText(title);
               
               if (AnalisTracker.isTypeSelected(Category)){
-                if (AnalisTracker.FilterList.value.trim().length >1) {
-      if (item.name.toLowerCase().includes(AnalisTracker.FilterList.value.toLowerCase())){
-  
-              if(magnet==0 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '" >' + title + '</a></td><td>' + comments + '</td></tr>';
-              if(magnet==1 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-              if(RenderTracker.platform ==='browser') finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="'+link+'" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-            }
-  
-      }else {
-  
-              if(magnet==0 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclik="openFileInExternalAppMagnet(\''+link+'\')" >#</a><a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-              if(magnet==1 &&  RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="#" onclick="openFileInExternalAppMagnet(\''+link+'\')" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-              if( RenderTracker.platform ==='browser') finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="'+link+'" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
-        }
-  
-  
-  
-            }
+          
+                if (AnalisTracker.FilterList.value.trim().length <3 ||(AnalisTracker.FilterList.value.trim().length >2 && item.name.toLowerCase().includes(AnalisTracker.FilterList.value.toLowerCase()) )){
+                    if(RenderTracker.platform ==='android')   finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td>#<a href="#" onclick="DownloadSelectFile(\''+link+'\')" title="' + description + '" >' + title + '</a></td><td>' + comments + '</td></tr>';
+                    if(RenderTracker.platform ==='browser') finds = finds + ' <tr class="'+HighLine+'"><td>' + headData + '</td><td><a href="'+link+'" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+                }
+    
+              }
             })
   
   
@@ -235,26 +224,21 @@ class RejectsClass {
   
   
   function DownloadSelectFile(url) {
-  
-    
-  function simpleHash() {
-      var currentDate = new Date();
-      fileURL = currentDate.getFullYear()  + (currentDate.getMonth() + 1)  + currentDate.getDate()  + currentDate.getHours()  + currentDate.getMinutes()  + currentDate.getSeconds()  ;
-  
-      return fileURL;
-  }
-  SelectFileData=simpleHash()+'.torrent';
-   
-  
+    var $magnets=checkMagnet(url);
+    if($magnets==1) {openFileInExternalAppMagnet(url); return 0;}
+    function simpleHash() {
+        var currentDate = new Date();
+        fileURL = currentDate.getFullYear()  + (currentDate.getMonth() + 1)  + currentDate.getDate()  + currentDate.getHours()  + currentDate.getMinutes()  + currentDate.getSeconds()  ;
+        return fileURL;
+    }
+    SelectFileData=simpleHash()+'.torrent';
     var fileTransfer = new FileTransfer();
-    var fileURL = cordova.file.dataDirectory +'files/' + SelectFileData; // Путь, по которому будет сохранен файл +'Download/'
-   
-    
+    var fileURL = cordova.file.dataDirectory +'files/' + SelectFileData; 
     var fileURI = encodeURI(url);
-    //var fileURI = url;
+
     
   
-    setTimeout(function() { //fileEntry.toURL()
+    setTimeout(function() { 
     fileTransfer.download(
         fileURI,
         fileURL,
