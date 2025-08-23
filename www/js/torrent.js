@@ -75,11 +75,10 @@ class RejectsClass {
       this.ViewOutput=document.getElementById("ViewOutput") 
       AnalisTracker.FilterList.addEventListener('change',this.renderTable);
       this.platform=cordova.platformId;
-//      this.FilterTorrent = {'film': ["mp3", "wav", "fb2","flac","jpg","jpeg"],
- //   }
+  }
        
       
-     }
+     
   hideConfigPanel(){
     var ConfigPanel=document.getElementById("ConfigPanel");
     if(ConfigPanel.style.display=="none") ConfigPanel.style.display='block'
@@ -106,7 +105,6 @@ class RejectsClass {
             var title = item.name;
             var comments = item.comments;
             var headData = item.headData;
-            var magnet=checkMagnet(link);
             var Category=item.Category;
             var description=item.description;
               var HighLine='';
