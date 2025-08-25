@@ -8,11 +8,11 @@
         <link rel="stylesheet" href="css/film.css?v=0.01">
         <script src="/js/jquery.min.js"></script>
         <script src="/js/cookie.min.js"></script>
-   
+        <script src="/js/func.js?v=0.001"></script>
 
         <script src="cordova.js"></script>
 
-        <title>Hello World</title>
+        <title>Выбранные фильмы</title>
     </head>
     <body>
 
@@ -51,27 +51,17 @@ var UserName = getCookie("UserName");
                     if (json.length === 0) {
             // Display a placeholder image
             req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
-        } else {
+        } else {    var tmp;
                     json.forEach(function (item, i, json) {
                         let liLast = document.createElement('div');
                         liLast.className = "MovieCardFace";
                         liLast.id = 'Movie_'+item['kinopoiskId'];
                         liLast.addEventListener('click', function() { showDesc(item['kinopoiskId']); });
-                        liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['kinopoiskId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
-                        liLast.innerHTML += "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
-                        liLast.innerHTML += "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>";
-                        liLast.innerHTML += "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >"+
-             "<h1>"+item['nameRu']+
-            "<a href='torrent.html?q="+item['nameRu']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            "<h1>"+item['nameOriginal']+
-            "<a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
-            '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
-            '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-            '<img  src=\'img/minus-2-icon-14-256.png\' id="add_'+item['kinopoiskId']+'" onclick="minusFavorites('+item['kinopoiskId']+')" class=\'bottons\'>'+
-           
-            "<br>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
-            liLast.innerHTML +='</div>';
+                        tmp=     "<img src='https://imgfilm.allfilmbook.ru/?id="+item['kinopoiskId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>"+
+                                 "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>"+
+                                 "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>"+
+                                 "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >";
+                        liLast.innerHTML = tmp + renderedClass.OutFilmData(item,1)+'</div>';
                         ViewPort.append(liLast); // вставить liLast в конец <ol>			
                     })
                     if(SaveiD>0) {

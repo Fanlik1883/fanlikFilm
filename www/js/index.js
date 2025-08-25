@@ -103,32 +103,14 @@ function ListFilm(year = 0,list=0,genres='',text='') { // Задачи на вы
         if (json.length === 0) {
             req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
         } else {
-
-
 		json.forEach(function (item, i, json) {
-
 			let liLast = document.createElement('div');
             liLast.className = "MovieCardFace";
             liLast.id = 'Movie_'+item['kinopoiskId'];
             liLast.dataset.list = list;
             liLast.addEventListener('click', function() { showDesc(item['kinopoiskId']); });
-			liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['kinopoiskId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
-            liLast.innerHTML += "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
-            liLast.innerHTML += "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>";
-            liLast.innerHTML += "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >"+
-             "<h1>"+item['nameRu']+
-            "<a href='torrent.html?q="+item['nameRu']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            "<h1>"+item['nameOriginal']+
-            "<a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
-            '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
-            '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-            '<img  src=\'img/add-icon-png-2468.png\' id="add_'+item['kinopoiskId']+'" onclick="addFavorites('+item['kinopoiskId']+')" class=\'bottons\'>'+
-           
-            "<br>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
-            liLast.innerHTML +='</div>';
-            ViewPort.append(liLast); // вставить liLast в конец <ol>	
-			
+			liLast.innerHTML = renderedClass.OutFilmTemplate(item,1);
+            ViewPort.append(liLast); 	
 		})
 	if(SaveiD>0) {
 		document.querySelector('#Movie_'+SaveiD).scrollIntoView({ behavior: 'smooth' })
@@ -149,10 +131,7 @@ function ListFilmN(n) { // Задачи на выполнения
         if (json.length === 0) {
             req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
         } else {
-
-
 		json.forEach(function (item, i, json) {
-
 			let liLast = document.createElement('div');
             liLast.className = "MovieCardFace";
             liLast.id = 'Movie_'+item['kinopoiskId'];
@@ -160,12 +139,8 @@ function ListFilmN(n) { // Задачи на выполнения
 			liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['kinopoiskId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
             liLast.innerHTML += "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
             liLast.innerHTML += "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>";
-            liLast.innerHTML += "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >"+
-            '<a href="torrent.html?q='+item['nameRu']+" "+item['year']+"\"><img  src=\'img/torrent.jpg\' class=\'bottons\'></a>"+
-            '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
-            '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
-            '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-            "<h1>"+item['nameRu']+"</h1>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
+            liLast.innerHTML += "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >";
+            liLast.innerHTML += renderedClass.OutFilmTemplate(item,1);
             liLast.innerHTML +='</div>';
             ViewPort.append(liLast); // вставить liLast в конец <ol>			
 		})
@@ -255,10 +230,3 @@ function setCookieMy(name,data) {
         })
     }
     
-    document.addEventListener('contextmenu', function(event) {
-        // Отменяем стандартное контекстное меню
-        event.preventDefault();
-      
-        // Выводим сообщение
-        cordova.plugins.diagnostic.requestExit();
-      });

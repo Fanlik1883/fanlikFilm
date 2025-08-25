@@ -8,32 +8,78 @@
         <link rel="stylesheet" href="css/film.css?v=0.01">
         <script src="/js/jquery.min.js"></script>
 
-   
         <script src="/js/func.js?v=0.001"></script>
+
         <script src="cordova.js"></script>
 
-        <title>Hello World</title>
+        <title>Артисты</title>
     </head>
-    <body>
-
-        <div id="ViewPort">
-            
-         </div>
-
+    <body><table><tr><td><div id="kinopoisk_person"></div</td><td><div id="image-container"><img style="position: fixed; right: 10px;top: 10px;" id="image"></div></td></td></tr></table>
+        ><hr>
+        
+        <div id="ViewPort"> </div>
  
          <script>
-            kinopoiskSimilars();
-            function kinopoiskSimilars() {
-                let params = new URLSearchParams(document.location.search);
-                fins = params.get('id');
+            
+            kinopoiskPerson();
+
+ function kinopoiskPerson() {
+    let params = new URLSearchParams(document.location.search);
+    fins = params.get('id');
+    var req_out = document.getElementById('kinopoisk_person');
+    $.ajaxSetup({timeout: 3000});
+
+    var finds = '';
+    $.get('https://allfilmbook.ru/API/kinopoisk/get/staff/', {id: fins}).success(function (data) {
+        json = JSON.parse(data);
+        json.forEach(function (item, i, json) {
+            finds = finds + '<div  onclick="kinopoiskPersonFilm('+ item['staffId'] +')" class="top__slider_div__item_person"  id="left_23231">'
+            finds = finds + '<a onmouseover="showImage(\''+ item['posterUrl'] +'\', this, event)">'
+             if(!item['nameRu']) 
+                  finds = finds + item['professionKey']+" : "+item['nameEn'] + '</a> '
+              else  
+                  finds = finds + item['professionKey']+" : "+item['nameRu'] + '</a> '
+            finds = finds + '</div>'
+        })
+        finds = finds
+        req_out.innerHTML = finds;
+        finds = '';
+
+    })
+}
+
+
+function showImage(imageUrl, link, event) {
+    var imageContainer = document.getElementById('image-container');
+    var image = document.getElementById('image');
+    image.src = imageUrl;
+    imageContainer.style.display = 'block';
+ 
+  }
+  
+  function hideImage() {
+    var imageContainer = document.getElementById('image-container');
+    imageContainer.style.display = 'none';
+  }
+
+
+
+            function kinopoiskPersonFilm(fins) {
                 var req_out = document.getElementById('ViewPort');
+                req_out.innerHTML='';
                 $.ajaxSetup({timeout: 10000});
                 var finds = '';
-                $.get('https://allfilmbook.ru/API/kinopoisk/get/similars/', {id: fins}).success(function (data) {
+                $.get('https://allfilmbook.ru/API/kinopoisk/get/StaffPerson/', {id: fins}).success(function (data) {
             
-                    json = JSON.parse(data);
+                  var  json = JSON.parse(data);
+                    json=json.films
+                    let uniqueObjects = {};
+                    json.forEach(obj => {
+                            uniqueObjects[obj.filmId] = obj;
+                        });
+                        json = Object.values(uniqueObjects);
                     if (json.length === 0) {
-            // Display a placeholder image
+            
             req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
         } else {
                     json.forEach(function (item, i, json) {
@@ -41,7 +87,6 @@
                         liLast.className = "MovieCardFace";
                         liLast.id = 'Movie_'+item['filmId'];
                         liLast.addEventListener('click', function() { showDesc(item['filmId']); });
-                      
                         liLast.innerHTML = renderedClass.OutFilmTemplate(item);
 
 
@@ -65,8 +110,7 @@ function GetDesc(n){
         var req_out = document.getElementById('desc_'+n);
 		json.forEach(function (item, i, json) {
 
-            req_out.innerHTML=renderedClass.OutFilmData(item);
-            req_out.innerHTML +='</div>';
+            req_out.innerHTML= renderedClass.OutFilmData(item)+ '</div>';
             document.getElementById('overlay_'+item['kinopoiskId']).innerHTML= item['ratingKinopoisk']+" "+item['ratingImdb'];
             document.getElementById("desc_"+item['kinopoiskId']).classList.remove("hide");
             document.getElementById("desc_"+item['kinopoiskId']).classList.toggle("show");

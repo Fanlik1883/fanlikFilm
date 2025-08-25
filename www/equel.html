@@ -7,7 +7,7 @@
       
         <link rel="stylesheet" href="css/film.css?v=0.01">
         <script src="/js/jquery.min.js"></script>
-
+        <script src="/js/func.js?v=0.001"></script>
        
 
         <script src="cordova.js"></script>
@@ -38,15 +38,7 @@
                                     liLast.className = "MovieCardFace";
                                     liLast.id = 'Movie_'+item['filmId'];
                                     liLast.addEventListener('click', function() { showDesc(item['filmId']); });
-                                    liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['filmId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
-                                    liLast.innerHTML += "<div class='short-infobar' id='name_"+item['filmId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
-                                    liLast.innerHTML += "<div class='overlay' id='overlay_"+item['filmId']+"'></div>";
-                                    liLast.innerHTML += "<div class='desc hide' id='desc_"+item['filmId']+"' ></div?";
-          
-                                  
-                                  
-                                  
-                                    liLast.innerHTML +='</div>';
+                                    liLast.innerHTML = renderedClass.OutFilmTemplate(item);
                                     ViewPort.append(liLast); // вставить liLast в конец <ol>			
                                 })
                             }
@@ -61,16 +53,7 @@ $.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
     var req_out = document.getElementById('desc_'+n);
     json.forEach(function (item, i, json) {
 
-        req_out.innerHTML="<h1>"+item['nameRu']+
-            "<a href='torrent.html?q="+item['nameRu']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            "<h1>"+item['nameOriginal']+
-            "<a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>"+ 
-            '<a href="similar.html?id='+item['kinopoiskId']+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
-            '<a href="equel.html?id='+item['kinopoiskId']+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
-            '<a href="img.html?id='+item['kinopoiskId']+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-            '<img  src=\'img/add-icon-png-2468.png\' id="add_'+item['kinopoiskId']+'" onclick="addFavorites('+item['kinopoiskId']+')" class=\'bottons\'>'+
-            "<br>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
-            req_out.innerHTML +='</div>';
+        req_out.innerHTML=renderedClass.OutFilmData(item) +'</div>';
 
         document.getElementById('overlay_'+item['kinopoiskId']).innerHTML= item['ratingKinopoisk']+" "+item['ratingImdb'];
         document.getElementById("desc_"+item['kinopoiskId']).classList.remove("hide");
