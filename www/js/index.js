@@ -35,33 +35,15 @@ if (!UserHash || !UserName) { // Если не авторизован
 	document.getElementById('Avtorization_link').innerHTML += '<a href="#" onclick=\'Avtorization_ShowHide()\'>Войти</a>';
   }
 
-/*
-  setTimeout(function() {
-    
-///###############Права Выйти в интернтер
-var permissions = cordova.plugins.permissions;
 
-permissions.requestPermission(permissions.INTERNET, success, error);
-
-function error() {
-  console.warn('INTERNET permission is not turned on');
-}
-
-function success( status ) {
-  if( !status.hasPermission ) error();
-}
-///------------------------###########Права Выйти в интернтер------------
-
- 
-  }, 1000);
-*/
 ListFilm(year,list,tag);
 
 function updateTag(){
 	list=1;
 	setCookieMy('SaveiD',0);
     setCookieMy('SaveList',list);
-    tag=TagList[TagList.selectedIndex].value;
+    if(TagList.selectedOptions.length-1>0){ tag='';  for (const entry of TagList.selectedOptions){tag+=entry.value+',';};tag=tag.slice(0, -1)}/************** */
+    else tag=TagList[TagList.selectedIndex].value;
     SetMyCookie('tag',tag);
     SetMyCookie('tagIndex',TagList.selectedIndex);
     document.getElementById('ViewPort').innerHTML='';
@@ -94,7 +76,7 @@ function GoSearch(){
 
 
 
-function ListFilm(year = 0,list=0,genres='',text='') { // Задачи на выполнения
+function ListFilm(year = 0,list=0,genres='',text='') { 
 	var ViewPort = document.getElementById('ViewPort');
 	$.ajaxSetup({ timeout: 10000 });
 
@@ -122,7 +104,7 @@ function ListFilm(year = 0,list=0,genres='',text='') { // Задачи на вы
 
 }
 
-function ListFilmN(n) { // Задачи на выполнения
+function ListFilmN(n) { 
 	var ViewPort = document.getElementById('ViewPort');
 	$.ajaxSetup({ timeout: 10000 });
 
@@ -135,14 +117,9 @@ function ListFilmN(n) { // Задачи на выполнения
 			let liLast = document.createElement('div');
             liLast.className = "MovieCardFace";
             liLast.id = 'Movie_'+item['kinopoiskId'];
-             liLast.addEventListener('click', function() { showDesc(item['kinopoiskId']); });
-			liLast.innerHTML = "<img src='https://imgfilm.allfilmbook.ru/?id="+item['kinopoiskId']+"' alt='"+item['nameRu']+"' class='MovesPicFace'>";
-            liLast.innerHTML += "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>";
-            liLast.innerHTML += "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>";
-            liLast.innerHTML += "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >";
-            liLast.innerHTML += renderedClass.OutFilmTemplate(item,1);
-            liLast.innerHTML +='</div>';
-            ViewPort.append(liLast); // вставить liLast в конец <ol>			
+            liLast.addEventListener('click', function() { showDesc(item['kinopoiskId']); });
+            liLast.innerHTML = renderedClass.OutFilmTemplate(item,1);
+            ViewPort.append(liLast); 		
 		})
 
 	
@@ -162,12 +139,12 @@ const observer = new IntersectionObserver((entries) => {
     if ((window.scrollY > document.body.scrollHeight - 1500)&& window.scrollY > 5000 ) {
        
         list++;
-        ListFilm(year,list,tag); // Позвать функцию здесь
+        ListFilm(year,list,tag); 
         let dd = document.getElementById('load-more-button')
         observer.observe(dd);
     }
   }, {
-    root: null, // Использовать все окно как корневой элемент
+    root: null, 
     threshold: 1.0,
   });
   let dd = document.getElementById('load-more-button')
