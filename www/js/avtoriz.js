@@ -46,13 +46,13 @@ function AvtorizationPost() { // Отправить запрос
     var login = document.getElementById('Avtorization_login').value
     var password = document.getElementById('Avtorization_password').value
     $.ajaxSetup({timeout: 3000});
-    $.get('https://allfilmbook.ru/API/user/Authorization/mobile.php', {login: login, password: password}).done(function (data) {
+    $.get('https://allfilmbook.ru/API/user/Authorization/mobile1.php', {login: login, password: password}).done(function (data) {
 
       dates = JSON.parse(data);
         if(dates.answer === 'Ok') {
             setCookieMy("UserId",1)
-            setCookieMy("UserHash",dates.hash)
-            setCookieMy("UserName",login)
+            setCookieMy("user_hash",dates.hash)
+            setCookieMy("user_name",login)
             location.reload();
         
         }
@@ -62,7 +62,7 @@ function AvtorizationPost() { // Отправить запрос
 
 }
 
-
+/*
 if(GetCookie("fileUser")==null & GetCookie("UserHash")!=null & GetCookie("UserId")!=null){
  
         localStorage.setItem("FileUserHash",GetCookie("UserHash"));
@@ -78,7 +78,7 @@ if(GetCookie("fileUser")==null & GetCookie("UserHash")!=null & GetCookie("UserId
         document.cookie = "UserHash="+tmp+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
         document.cookie = "UserId="+tmp1+"; expires=" + new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString() + "; path=/";
     }
-
+*/
 
     function GetCookie(cookie_name) // Получение куков
     {

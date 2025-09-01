@@ -26,8 +26,8 @@ TagList.addEventListener('change',updateTag);
 
 
 var UserId=getCookie("UserId");
-var UserHash = getCookie("UserHash");
-var UserName = getCookie("UserName");
+var UserHash = getCookie("user_hash");
+var UserName = getCookie("user_name");
 
 
 
