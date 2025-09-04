@@ -69,9 +69,10 @@ function updateYear(){
 function GoSearch(){
 
     document.getElementById('ViewPort').innerHTML='';
-    var text=document.getElementById('TextSerch').value;
+    var text=document.getElementById('TextSearch').value;
     ListFilm(0,0,'',text);
-    //location.reload()
+     SettingsPanelHide();
+
    }
 
 
@@ -111,7 +112,7 @@ function ListFilmN(n) {
 	$.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
-            req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
+            ViewPort.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
         } else {
 		json.forEach(function (item, i, json) {
 			let liLast = document.createElement('div');
@@ -185,11 +186,12 @@ function SettingsPanelHide() {
 
 
 function GoKinopoisk() {
-cordova.plugins.clipboard.paste(function (text) {
+    document.getElementById('ViewPort').innerHTML='';
+    var text=document.getElementById('IdSearch').value;
     id=text.match(/\d+/);
-    ListFilmN(id);
+    ListFilmN(id[0]);
+     SettingsPanelHide();
 
-});
 }
 
 
