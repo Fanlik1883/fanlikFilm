@@ -6,7 +6,7 @@ class RejectsClass {
   }
   FindJackett(findText, findyear, adressRequest) {
     var apikey = this.ApiKeys[adressRequest];
-    var apiUrl = 'https://allfilmbook.ru/API/' + adressRequest + '/API/v2.0/indexers/all/results?apikey=' + apikey + '&Query=' + findText + ' ' + findyear;
+    var apiUrl = 'https://api.allfilmbook.ru/' + adressRequest + '/API/v2.0/indexers/all/results?apikey=' + apikey + '&Query=' + findText + ' ' + findyear;
 
     $.ajax({
       url: apiUrl,

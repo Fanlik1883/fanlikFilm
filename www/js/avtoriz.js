@@ -17,7 +17,7 @@ function RegistrationPost() { // Отправить запрос
 
 
     $.ajaxSetup({timeout: 3000});
-    $.get('https://allfilmbook.ru/API/user/Registration/', {login: login, password: password}).done(function (data) {
+    $.get('https://api.allfilmbook.ru/user/Registration/', {login: login, password: password}).done(function (data) {
 
         if (data === "Ok") {
             AddUser_ShowHide()
@@ -46,7 +46,7 @@ function AvtorizationPost() { // Отправить запрос
     var login = document.getElementById('Avtorization_login').value
     var password = document.getElementById('Avtorization_password').value
     $.ajaxSetup({timeout: 3000});
-    $.get('https://allfilmbook.ru/API/user/Authorization/mobile1.php', {login: login, password: password}).done(function (data) {
+    $.get('https://api.allfilmbook.ru/user/Authorization/mobile1.php', {login: login, password: password}).done(function (data) {
 
       dates = JSON.parse(data);
         if(dates.answer === 'Ok') {

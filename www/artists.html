@@ -9,7 +9,7 @@
         <script src="/js/jquery.min.js"></script>
 
         <script src="/js/func.js?v=0.001"></script>
-
+<script src="/js/all.js?v=0.001"></script>
         <script src="cordova.js"></script>
 
         <title>Артисты</title>
@@ -30,7 +30,7 @@
     $.ajaxSetup({timeout: 3000});
 
     var finds = '';
-    $.get('https://allfilmbook.ru/API/kinopoisk/get/staff/', {id: fins}).success(function (data) {
+    $.get('https://api.allfilmbook.ru/kinopoisk/get/staff/', {id: fins}).success(function (data) {
         json = JSON.parse(data);
         json.forEach(function (item, i, json) {
             finds = finds + '<div  onclick="kinopoiskPersonFilm('+ item['staffId'] +')" class="top__slider_div__item_person"  id="left_23231">'
@@ -69,7 +69,7 @@ function showImage(imageUrl, link, event) {
                 req_out.innerHTML='';
                 $.ajaxSetup({timeout: 10000});
                 var finds = '';
-                $.get('https://allfilmbook.ru/API/kinopoisk/get/StaffPerson/', {id: fins}).success(function (data) {
+                $.get('https://api.allfilmbook.ru/kinopoisk/get/StaffPerson/', {id: fins}).success(function (data) {
             
                   var  json = JSON.parse(data);
                     json=json.films
@@ -101,7 +101,7 @@ function showImage(imageUrl, link, event) {
 
 function GetDesc(n){
 
-    $.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
+    $.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
                         req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";

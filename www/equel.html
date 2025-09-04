@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="css/film.css?v=0.01">
         <script src="/js/jquery.min.js"></script>
         <script src="/js/func.js?v=0.001"></script>
-       
+       <script src="/js/all.js?v=0.001"></script>
 
         <script src="cordova.js"></script>
 
@@ -28,7 +28,7 @@
                 $.ajaxSetup({timeout: 10000});
             
                 var finds = '';
-                $.get('https://allfilmbook.ru/API/kinopoisk/get/equels_and_prequels/', {id: fins}).success(function (data) {
+                $.get('https://api.allfilmbook.ru/kinopoisk/get/equels_and_prequels/', {id: fins}).success(function (data) {
                     json = JSON.parse(data);
                     if (json.length === 0) {
                         req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
@@ -48,7 +48,7 @@
 
             function GetDesc(n){
 
-$.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
+$.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
     json = JSON.parse(data);
     var req_out = document.getElementById('desc_'+n);
     json.forEach(function (item, i, json) {

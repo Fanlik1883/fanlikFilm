@@ -80,7 +80,7 @@ function ListFilm(year = 0,list=0,genres='',text='') {
 	var ViewPort = document.getElementById('ViewPort');
 	$.ajaxSetup({ timeout: 10000 });
 
-	$.get('https://allfilmbook.ru/API/film/list/', { year: year, genres: genres, list: list, text: text}).done(function (data) {
+	$.get('https://api.allfilmbook.ru/film/list/', { year: year, genres: genres, list: list, text: text}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
             req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
@@ -108,7 +108,7 @@ function ListFilmN(n) {
 	var ViewPort = document.getElementById('ViewPort');
 	$.ajaxSetup({ timeout: 10000 });
 
-	$.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
+	$.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
             req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
@@ -201,9 +201,4 @@ function setCookieMy(name,data) {
 
     }
 
-    function addFavorites(id){
-        $.post('https://allfilmbook.ru/API/film/rating/?film='+id+'&tip=2&r=1',  {UserName: UserName, UserHash: UserHash }).done(function (data) {
-            document.getElementById("add_"+id).remove();
-        })
-    }
-    
+

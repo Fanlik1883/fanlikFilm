@@ -45,7 +45,7 @@ var UserName = getCookie("user_name");
                 $.ajaxSetup({timeout: 10000});
                 var finds = '';
                 
-                $.post('https://allfilmbook.ru/API/film/favorites/', {UserName: UserName, UserHash: UserHash }).success(function (data) {
+                $.post('https://api.allfilmbook.ru/film/favorites/', {UserName: UserName, UserHash: UserHash }).success(function (data) {
             
                     json = JSON.parse(data);
                     if (json.length === 0) {
@@ -78,7 +78,7 @@ var UserName = getCookie("user_name");
 
 function GetDesc(n){
 
-    $.get('https://allfilmbook.ru/API/film/list/', { n: n}).done(function (data) {
+    $.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
                         req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
@@ -140,7 +140,7 @@ function showDesc (id){
 
 
 function minusFavorites(id){
-    $.post('https://allfilmbook.ru/API/film/rating/?film='+id+'&tip=2&r=0',  {UserName: UserName, UserHash: UserHash }).done(function (data) {
+    $.post('https://api.allfilmbook.ru/film/rating/?film='+id+'&tip=2&r=0',  {UserName: UserName, UserHash: UserHash }).done(function (data) {
         
     })
     document.getElementById("Movie_"+id).remove();

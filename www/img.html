@@ -34,7 +34,7 @@ function kinopoiskPic() {
     var req_out = document.getElementById('ViewPort');
     $.ajaxSetup({timeout: 10000});
     var finds = '';
-    $.get('https://allfilmbook.ru/API/kinopoisk/get/img/', {id: fins}).success(function (data) {
+    $.get('https://api.allfilmbook.ru/kinopoisk/get/img/', {id: fins}).success(function (data) {
         json = JSON.parse(data);
         if (json.length === 0) {
             // Display a placeholder image
