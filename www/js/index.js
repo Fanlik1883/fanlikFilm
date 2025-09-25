@@ -13,6 +13,7 @@ else
 
 var year=getCookie('year');
 var tag=getCookie('tag');
+var TypeFilm=getCookie('TypeFilm');
 var yearIndex=getCookie('yearIndex');
 var tagIndex=getCookie('tagIndex');
 var fildStr=''; //Куки
@@ -56,6 +57,20 @@ function updateYear(){
 	list=1;
 	   setCookieMy('SaveiD',0);
     setCookieMy('SaveList',list);
+ TypeFilmTmp=TypeFilm[TypeFilm.selectedIndex].value;
+ SetMyCookie('TypeFilm',TypeFilmTmp);
+ SetMyCookie('TypeFilmIndex',TypeFilm.selectedIndex);
+ document.getElementById('ViewPort').innerHTML='';
+ 
+ ListFilm(year,list,tag);
+ SettingsPanelHide()
+ //location.reload()
+}
+
+function updateTypeFilm(){
+	list=1;
+	   setCookieMy('SaveiD',0);
+    setCookieMy('SaveList',list);
  year=YearList[YearList.selectedIndex].value;
  SetMyCookie('year',year);
  SetMyCookie('yearIndex',YearList.selectedIndex);
@@ -77,11 +92,11 @@ function GoSearch(){
 
 
 
-function ListFilm(year = 0,list=0,genres='',text='') { 
+function ListFilm(year = 0,list=0,genres='',text='', TypeFilm='') { 
 	var ViewPort = document.getElementById('ViewPort');
 	$.ajaxSetup({ timeout: 10000 });
 
-	$.get('https://api.allfilmbook.ru/film/list/', { year: year, genres: genres, list: list, text: text}).done(function (data) {
+	$.get('https://api.allfilmbook.ru/film/list/', { year: year, genres: genres, list: list, text: text, TypeFilm: TypeFilm}).done(function (data) {
 		json = JSON.parse(data);
         if (json.length === 0) {
             req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
