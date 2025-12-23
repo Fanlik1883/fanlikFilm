@@ -14,6 +14,7 @@ else
 var year=getCookie('year');
 var tag=getCookie('tag');
 var TypeFilm=getCookie('TypeFilm');
+var year=getCookie('year');
 var yearIndex=getCookie('yearIndex');
 var tagIndex=getCookie('tagIndex');
 var fildStr=''; //Куки
@@ -53,7 +54,23 @@ function updateTag(){
    // location.reload()
 }
 
+
+
 function updateYear(){
+	list=1;
+	   setCookieMy('SaveiD',0);
+    setCookieMy('SaveList',list);
+ year=YearList[YearList.selectedIndex].value;
+ SetMyCookie('year',year);
+ SetMyCookie('yearIndex',YearList.selectedIndex);
+ document.getElementById('ViewPort').innerHTML='';
+ 
+ ListFilm(year,list,tag);
+ SettingsPanelHide()
+ //location.reload()
+}
+
+function updateTypeFilm(){
 	list=1;
 	   setCookieMy('SaveiD',0);
     setCookieMy('SaveList',list);
@@ -67,19 +84,6 @@ function updateYear(){
  //location.reload()
 }
 
-function updateTypeFilm(){
-	list=1;
-	   setCookieMy('SaveiD',0);
-    setCookieMy('SaveList',list);
- year=YearList[YearList.selectedIndex].value;
- SetMyCookie('year',year);
- SetMyCookie('yearIndex',YearList.selectedIndex);
- document.getElementById('ViewPort').innerHTML='';
- 
- ListFilm(year,list,tag);
- SettingsPanelHide()
- //location.reload()
-}
 
 function GoSearch(){
 
@@ -217,5 +221,4 @@ function setCookieMy(name,data) {
     })
 
     }
-
 

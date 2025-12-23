@@ -9,7 +9,7 @@
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="css/film.css?v=0.01">
-        <script src="/js/jquery.min.js"></script>
+        <script src="js/jquery.min.js"></script>
 
  
 
@@ -38,7 +38,7 @@ function kinopoiskPic() {
         json = JSON.parse(data);
         if (json.length === 0) {
             // Display a placeholder image
-            req_out.innerHTML = "<img src='/img/not.png' style=' width: 100%;' title='' />";
+            req_out.innerHTML = "<img src='img/not.png' style=' width: 100%;' title='' />";
         } else {
         json.forEach(function (item, i, json) {
             finds = finds + "<img src='" + item + "' style=' width: 100%;'  title=''>";

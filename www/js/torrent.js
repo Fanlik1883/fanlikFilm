@@ -6,13 +6,17 @@ class RejectsClass {
   }
   FindJackett(findText, findyear, adressRequest) {
     var apikey = this.ApiKeys[adressRequest];
-    var apiUrl = 'https://api.allfilmbook.ru/' + adressRequest + '/API/v2.0/indexers/all/results?apikey=' + apikey + '&Query=' + findText + ' ' + findyear;
+    if(adressRequest=='Magnet') var apiUrl = 'https://api.allfilmbook.ru/' + adressRequest + '/search/' + findText;
+    if(adressRequest=='Rutracker') var apiUrl = 'https://api.allfilmbook.ru/magnet/get/?text=' + findText + '&year=' + findyear;
+    if(adressRequest=='Jackett' ||adressRequest=='Jackett2'||adressRequest=='JackettEng')var apiUrl = 'https://api.allfilmbook.ru/' + adressRequest + '/API/v2.0/indexers/all/results?apikey=' + apikey + '&Query=' + findText + ' ' + findyear;
 
+  
     $.ajax({
       url: apiUrl,
       timeout: 30000,
       success: function (data) {
         var json = JSON.parse(JSON.stringify(data));
+
         var finds = json.Results.map(function (item) {
           if (typeof item.Link === 'string') {
             var hash = item.Link;
@@ -25,6 +29,7 @@ class RejectsClass {
           var leechers = item.Peers;
           var trackersChecked = item.trackersChecked;
           var trackersCheckedFormatted = item.PublishDate;
+          item.PublishDate = item.PublishDate.replace(" ", "T");
           var index = item.PublishDate.indexOf("T");
           trackersCheckedFormatted = trackersCheckedFormatted.substring(0, index);
           var size = item.Size;
@@ -72,7 +77,19 @@ class renderClass {
     this.OutMass = [];
     this.ViewOutput = document.getElementById("ViewOutput")
     AnalisTracker.FilterList.addEventListener('change', this.renderTable);
-    this.platform = cordova.platformId;
+    //this.platform = cordova.platformId;
+    this.platform = (window.cordova && window.cordova.platformId) 
+    ? window.cordova.platformId 
+    : 'browser';
+
+
+    /***
+       if (window.cordova && window.cordova.platformId) {
+      this.platform = window.cordova.platformId;
+  } else {
+      this.platform = 'browser';
+  }
+     */
   }
 
 
@@ -144,6 +161,7 @@ class textClass {
     this.FildFindString = document.getElementById("FindString")
     this.FildFindString.value = this.FindString;
     this.FindYear = new URLSearchParams(document.location.search).get('year');
+    this.FindId = new URLSearchParams(document.location.search).get('id');
     this.FildFindYear = document.getElementById("FindYear");
     this.FildFindYear.value = this.FindYear;
     this.FilterList = document.getElementById("FilterList");
@@ -199,8 +217,8 @@ AnalisTracker = new textClass();
 RejectTracker = new RejectsClass();
 RenderTracker = new renderClass();
 
-RejectTracker.FindJackett(AnalisTracker.FildFindString.value, AnalisTracker.FildFindYear.value, "Jackett");
-RejectTracker.FindJackett(AnalisTracker.FildFindString.value, AnalisTracker.FildFindYear.value, "Jackett2")
+RejectTracker.FindJackett(AnalisTracker.FildFindString.value, '', "Magnet");
+RejectTracker.FindJackett(AnalisTracker.FildFindString.value, AnalisTracker.FildFindYear.value, "Rutracker")
 //   RejectTracker.FindJackett(FindString,year,"JackettEng")
 
 

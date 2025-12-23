@@ -7,9 +7,7 @@ class Render {
     OutFilmData(item,favoryte=0){
         var tmp='';var idFilm=item['kinopoiskId'];
         if(!idFilm)idFilm=item['filmId'];
-        if(item['nameRu']) tmp+= "<h1>"+item['nameRu']+ "<a href='torrent.html?q="+item['nameRu']+" "+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>";
-        if(item['nameOriginal']) tmp +=  "<h1>"+item['nameOriginal']+ "<a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottons\'></a></h1>";
-        tmp +='<a href="artists.html?id='+idFilm+'" ><img src=\'img/artist.png\' class=\'bottons\'></a>'+
+       tmp +='<a href="artists.html?id='+idFilm+'" ><img src=\'img/artist.png\' class=\'bottons\'></a>'+
         '<a href="similar.html?id='+idFilm+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
         '<a href="equel.html?id='+idFilm+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
         '<a href="img.html?id='+idFilm+'"><img  src=\'img/img.png\' class=\'bottons\'></a>';
@@ -17,7 +15,10 @@ class Render {
             tmp += '<img  src=\'img/add-icon-png-2468.png\' id="add_'+idFilm+'" onclick="addFavorites('+idFilm+')" class=\'bottons\'>';
         else
             tmp += '<img  src=\'img/minus-2-icon-14-256.png\' id="add_'+idFilm+'" onclick="minusFavorites('+idFilm+')" class=\'bottons\'>';
-        tmp +="<br>Кинопоиск: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"<br>Год: "+item['year']+"<br>Тип: "+item['type']+"<br>Длительность:"+item['filmLength']+"мин<br>Страны: "+item['countries']+"<br>Жанр: "+item['genres']+"<br>"+item['description'];
+
+            if(item['nameRu']) tmp+= "<br><a href='torrent.html?q="+item['nameRu']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottonsU\'>"+item['nameRu']+ "</a>";
+            if(item['nameOriginal']) tmp +=  "<br><a href='torrent.html?q="+item['nameOriginal']+"&year="+item['year']+"\'><img  src=\'img/torrent.jpg\' class=\'bottonsU\'>"+item['nameOriginal']+ "</a>";
+            tmp +="<ul><li>Кп: "+item['ratingKinopoisk']+" IMDb:"+item['ratingImdb']+"</li><li>"+item['year']+"г.</li><li>"+item['filmLength']+" мин.</li><li>"+item['countries']+"</li><li>"+item['genres']+"</li></ul>"+item['description'];
 return tmp;
     }
 
@@ -42,3 +43,11 @@ return tmp;
 }
 
 const renderedClass= new Render;
+
+class RequestClass{
+    constructor() {
+                    this.Error=0;
+                    this.isLocal=0;
+    }
+
+}

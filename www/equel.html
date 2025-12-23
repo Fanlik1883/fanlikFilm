@@ -6,9 +6,9 @@
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
       
         <link rel="stylesheet" href="css/film.css?v=0.01">
-        <script src="/js/jquery.min.js"></script>
-        <script src="/js/func.js?v=0.001"></script>
-       <script src="/js/all.js?v=0.001"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/func.js?v=0.001"></script>
+       <script src="js/all.js?v=0.001"></script>
 
         <script src="cordova.js"></script>
 
@@ -31,7 +31,7 @@
                 $.get('https://api.allfilmbook.ru/kinopoisk/get/equels_and_prequels/', {id: fins}).success(function (data) {
                     json = JSON.parse(data);
                     if (json.length === 0) {
-                        req_out.innerHTML = "<img src='/img/zero.jpg' style=' width: 100%;' title='' />";
+                        req_out.innerHTML = "<img src='img/zero.jpg' style=' width: 100%;' title='' />";
                     } else {
                                 json.forEach(function (item, i, json) {
                                     let liLast = document.createElement('div');
