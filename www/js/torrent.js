@@ -250,30 +250,16 @@ function DownloadSelectFile(url) {
       },
       function (error) {
         let message;
-
-        switch (error.code) {
-          case 1:
-            message = 'Файл не найден';
-            break;
-          case 2:
-            message = 'Недопустимый URL';
-            break;
-          case 3:
-            message = 'Ошибка подключения';
-            break;
-          case 4:
-            message = 'Отмена операции';
-            break;
-          case 5:
-            message = 'Файл не был изменен';
-            break;
-          default:
-            message = 'Нет соответствия кода ошибки';
-        }
-
-        showNotification('Произошла ошибка загрузки: ' + fileURL + ' ' + message); //error.source
-
-
+        const errorMessages = [
+          'Файл не найден',
+          'Недопустимый URL', 
+          'Ошибка подключения',
+          'Отмена операции',
+          'Файл не был изменен',
+          'Нет соответствия кода ошибки'
+        ];
+        if(error.code < 1 && error.code > 5) error.code=6
+        showNotification('Произошла ошибка загрузки: ' + fileURL + ' ' + errorMessages[error.code]); //error.source
       }
     );
   }, 200);

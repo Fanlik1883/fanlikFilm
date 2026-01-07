@@ -74,12 +74,7 @@ class ExitApp {
 }
 
 const exitapp = new ExitApp();
-/*
-// Инициализация обработчика закрытия
-function initExitHandler() {
-    exitapp.setupExitHandler();
-}
-*/
+
 
 class Films {
     constructor() {
@@ -110,8 +105,6 @@ class Films {
         films.ListFilm(films.year,films.list,films.tag,'',films.TypeFilm);
         panel.SettingsPanelHide()
     }
-
-
 
     updateYear(){
         films.list=1;
@@ -230,12 +223,6 @@ class Films {
 }
 const films = new Films();
 films.setupEventpanel();
-
-
-
-
-
-
 
 var UserHash = getCookie("user_hash") || '';
 var UserName = getCookie("user_name") || '';

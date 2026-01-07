@@ -23,64 +23,94 @@
             
             kinopoiskPerson();
 
+class Panel {
+    constructor() {
+        this.panel=document.getElementById("panel");
+        this.loadmorebutton = document.getElementById('load-more-button');
+        this.ViewAvtor = document.getElementById('kinopoisk_person');
+        this.ViewFilm = document.getElementById('ViewPort');
+        
+    }
+}
+
+
+const panel = new Panel();
  function kinopoiskPerson() {
     let params = new URLSearchParams(document.location.search);
     fins = params.get('id');
-    var req_out = document.getElementById('kinopoisk_person');
-    $.ajaxSetup({timeout: 3000});
+      $.ajaxSetup({timeout: 3000});
 
     var finds = '';
     $.get('https://api.allfilmbook.ru/kinopoisk/get/staff/', {id: fins}).success(function (data) {
         json = JSON.parse(data);
         json.forEach(function (item, i, json) {
-            finds = finds + '<div  onclick="kinopoiskPersonFilm('+ item['staffId'] +')" class="top__slider_div__item_person"  id="left_23231">'
-            finds = finds + '<a onmouseover="showImage(\''+ item['posterUrl'] +'\', this, event)">'
-             if(!item['nameRu']) 
-                  finds = finds + item['professionKey']+" : "+item['nameEn'] + '</a> '
-              else  
-                  finds = finds + item['professionKey']+" : "+item['nameRu'] + '</a> '
-            finds = finds + '</div>'
+            OutAvtorData(item);
         })
-        finds = finds
-        req_out.innerHTML = finds;
-        finds = '';
-
     })
 }
 
-
-function showImage(imageUrl, link, event) {
-    var imageContainer = document.getElementById('image-container');
-    var image = document.getElementById('image');
-    image.src = imageUrl;
-    imageContainer.style.display = 'block';
+   function  OutAvtorData(item){ // rating
+        var tmp='';let idAvtor=item['staffId'];
+        let liLast = document.createElement('div');
+                liLast.className = "AvtorCardFace";
+                liLast.id = 'Avtor_'+idAvtor;
+                liLast.setAttribute('onclick', `kinopoiskPersonFilm(${idAvtor})`);
+                liLast.innerHTML = OutAvtorTemplate(item);
+                panel.ViewAvtor.append(liLast); 	
+        tmp +='<div  onclick="kinopoiskPersonFilm('+ idAvtor +')" class="top__slider_div__item_person"  id="left_23231">'
  
-  }
-  
-  function hideImage() {
-    var imageContainer = document.getElementById('image-container');
-    imageContainer.style.display = 'none';
-  }
+return tmp;
+    }
+
+  function   OutAvtorTemplate(item){
+        let idAvtor=item['staffId'];
+        let Name= item['professionKey']+" : "+(item['nameRu'] || item['nameEn']);
+        let tmp = "<img src='"+item['posterUrl']+"' alt='"+item['nameRu']+"' class='AvtorPicFace'>  \
+               <div class='short-infobar' id='avtor_"+idAvtor+"'><span class='short-quality'>"+Name+"</span></div> \
+               </div>";
+               "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>"
+        return tmp;
+    }
+
 
 
 
             function kinopoiskPersonFilm(fins) {
-                var req_out = document.getElementById('ViewPort');
-                req_out.innerHTML='';
+                panel.ViewFilm.innerHTML='';
                 $.ajaxSetup({timeout: 10000});
                 var finds = '';
                 $.get('https://api.allfilmbook.ru/kinopoisk/get/StaffPerson/', {id: fins}).success(function (data) {
             
                   var  json = JSON.parse(data);
                     json=json.films
+                    // Сортируем Уникальные
                     let uniqueObjects = {};
                     json.forEach(obj => {
                             uniqueObjects[obj.filmId] = obj;
                         });
                         json = Object.values(uniqueObjects);
+
+                   // Сортируем по рейтингу (от высшего к низшему)
+                    json.sort((a, b) => {
+                        const getRatingValue = (item) => {
+                            if (!item.rating)   return 0;
+                           // const ratingStr = item.rating.toString();
+                            const ratingNum = parseFloat(item.rating);
+                            return isNaN(ratingNum) ? 0 : ratingNum;
+                        };
+                        
+                        const ratingA = getRatingValue(a);
+                        const ratingB = getRatingValue(b);
+                        return ratingB - ratingA;
+                    });
+
+
+
+
+
                     if (json.length === 0) {
             
-            req_out.innerHTML = "<img src='img/zero.jpg' style=' width: 100%;' title='' />";
+            panel.ViewFilm.innerHTML = "<img src='img/zero.jpg' style=' width: 100%;' title='' />";
         } else {
                     json.forEach(function (item, i, json) {
                         let liLast = document.createElement('div');
@@ -91,7 +121,7 @@ function showImage(imageUrl, link, event) {
 
 
 
-                        ViewPort.append(liLast); // вставить liLast в конец <ol>			
+                        panel.ViewFilm.append(liLast); // вставить liLast в конец <ol>			
                     })
                 }
                 })

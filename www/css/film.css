@@ -37,6 +37,25 @@ text-align: center
   display: block;
 }
 
+.AvtorCardFace {
+  width: 100px;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  margin: 20px 0 0 20px;
+  padding: 0 0px 30px;
+  background: #ffffff;
+  overflow: hidden; /* Чтобы содержимое не выходило за границы */
+}
+
+
+.AvtorPicFace {
+  width: 100%;
+  height: 140px;
+  object-fit: cover; /* Чтобы изображение заполняло область */
+  display: block;
+}
+
 .desc {
   position: absolute;
   top: 0;
