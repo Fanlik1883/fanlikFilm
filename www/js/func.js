@@ -30,7 +30,7 @@ return tmp;
         if (PutDescription==1) tmp += "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>";
         tmp += "<div class='overlay' id='overlay_"+idFilm+"'></div>";
         tmp += "<div class='desc hide' id='desc_"+idFilm+"' >";
-        if (PutDescription==1) tmp +=renderedClass.OutFilmData(item);
+        if (PutDescription==1) tmp +=render.OutFilmData(item);
         tmp +="</div></div>";
 
 
@@ -42,12 +42,5 @@ return tmp;
 
 }
 
-const renderedClass= new Render;
+const render= new Render;
 
-class RequestClass{
-    constructor() {
-                    this.Error=0;
-                    this.isLocal=0;
-    }
-
-}

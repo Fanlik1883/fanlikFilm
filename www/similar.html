@@ -41,11 +41,7 @@
                         liLast.className = "MovieCardFace";
                         liLast.id = 'Movie_'+item['filmId'];
                         liLast.addEventListener('click', function() { showDesc(item['filmId']); });
-                      
-                        liLast.innerHTML = renderedClass.OutFilmTemplate(item);
-
-
-
+                        liLast.innerHTML = render.OutFilmTemplate(item);
                         ViewPort.append(liLast); // вставить liLast в конец <ol>			
                     })
                 }

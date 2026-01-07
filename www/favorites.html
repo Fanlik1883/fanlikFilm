@@ -22,23 +22,15 @@
 
  
          <script>
-
-if(getCookie('SaveList')>1) 
-	var list=getCookie('SaveList');
-else 
-	var list=1;
-
-if(getCookie('SaveiDF')>0) 
-	var SaveiD=getCookie('SaveiDF');
-else 
-    SaveiD=0;
+list=parseInt(getCookie('SaveList') || 1, 10);
+SaveiD=parseInt(getCookie('SaveiDF') || 0, 10);
 
 
 
 
-            var UserId=getCookie("UserId");
-var UserHash = getCookie("user_hash");
-var UserName = getCookie("user_name");
+
+var UserHash = getCookie("user_hash") || '';
+var UserName = getCookie("user_name") || '';
     kinopoiskFavorites();
             function kinopoiskFavorites() {
                 var req_out = document.getElementById('ViewPort');
@@ -61,7 +53,7 @@ var UserName = getCookie("user_name");
                                  "<div class='short-infobar' id='name_"+item['kinopoiskId']+"'><span class='short-quality'>"+item['nameRu']+"</span></div>"+
                                  "<div class='overlay'>"+item['ratingKinopoisk']+" "+item['ratingImdb']+"</div>"+
                                  "<div class='desc hide' id='desc_"+item['kinopoiskId']+"' >";
-                        liLast.innerHTML = tmp + renderedClass.OutFilmData(item,1)+'</div>';
+                        liLast.innerHTML = tmp + render.OutFilmData(item,1)+'</div>';
                         ViewPort.append(liLast); // вставить liLast в конец <ol>			
                     })
                     if(SaveiD>0) {

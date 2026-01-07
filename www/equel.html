@@ -38,7 +38,7 @@
                                     liLast.className = "MovieCardFace";
                                     liLast.id = 'Movie_'+item['filmId'];
                                     liLast.addEventListener('click', function() { showDesc(item['filmId']); });
-                                    liLast.innerHTML = renderedClass.OutFilmTemplate(item);
+                                    liLast.innerHTML = render.OutFilmTemplate(item);
                                     ViewPort.append(liLast); // вставить liLast в конец <ol>			
                                 })
                             }
@@ -53,7 +53,7 @@ $.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
     var req_out = document.getElementById('desc_'+n);
     json.forEach(function (item, i, json) {
 
-        req_out.innerHTML=renderedClass.OutFilmData(item) +'</div>';
+        req_out.innerHTML=render.OutFilmData(item) +'</div>';
 
         document.getElementById('overlay_'+item['kinopoiskId']).innerHTML= item['ratingKinopoisk']+" "+item['ratingImdb'];
         document.getElementById("desc_"+item['kinopoiskId']).classList.remove("hide");

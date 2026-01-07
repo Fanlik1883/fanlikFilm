@@ -20,6 +20,7 @@
             <label for="year">Год:</label>
             <select id="year" >
               <option value="">---</option>
+              <option value="2026">2026</option>
               <option value="2025">2025</option>
               <option value="2024">2024</option>
               <option value="2023">2023</option>
@@ -82,11 +83,11 @@
                     <option value="VIDEO">Видео</option>
             </select>
             <br>
-        <label for="TextSearch">Поиск:</label><input type="text" id="TextSearch" width="10"><img src='img/menu.png' onclick="GoSearch();" width='50' height='50'/><br>
-        <label for="Kiniopoisk">Кинопоиска Id:</label><input type="text" id="IdSearch" width="10"><img src='img/menu.png' onclick="GoKinopoisk();" width='50' height='50'/>
+        <label for="TextSearch">Поиск:</label><input type="text" id="TextSearch" width="10"><img src='img/menu.png' onclick="films.GoSearch();" width='50' height='50'/><br>
+        <label for="Kiniopoisk">Кинопоиска Id:</label><input type="text" id="IdSearch" width="10"><img src='img/menu.png' onclick="films.GoKinopoisk();" width='50' height='50'/>
         <div id="Avtorization_link"></div>    
     </div>
-        <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;"><img src='img/menu.png' onclick="SettingsPanelHide();" width='50' height='50'/></div>
+        <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;"><img src='img/menu.png' onclick="panel.SettingsPanelHide();" width='50' height='50'/></div>
         <div width="19%" style="position: fixed; right: 10px;top: 60px;z-index: 10000;"><a href="favorites.html" ><img src='img/favorite.png' width='50' height='50'/></a></div>
         
         <div id="ViewPort" >

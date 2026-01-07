@@ -82,14 +82,6 @@ class renderClass {
     ? window.cordova.platformId 
     : 'browser';
 
-
-    /***
-       if (window.cordova && window.cordova.platformId) {
-      this.platform = window.cordova.platformId;
-  } else {
-      this.platform = 'browser';
-  }
-     */
   }
 
 
@@ -230,11 +222,6 @@ function checkMagnet(text) {
     return 0;
   }
 }
-
-
-
-
-
 
 
 function DownloadSelectFile(url) {
