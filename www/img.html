@@ -1,63 +1,59 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <meta charset="utf-8">
 
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-        <meta name="color-scheme" content="light dark">
-        <link rel="stylesheet" href="css/film.css?v=0.01">
-        <script src="js/jquery.min.js"></script>
+<head>
+    <meta charset="utf-8">
 
- 
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/film.css?v=0.01">
+    <script src="js/jquery.min.js"></script>
+    <script src="cordova.js"></script>
+    <script src="js/func.js?"></script>
 
-        <script src="cordova.js"></script>
+    <title>Картинки</title>
+</head>
 
-        <title>Картинки</title>
-    </head>
-    <body>
+<body>
+    <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;">
+        <img src='img/back.png' id="bottonBack" width='50' height='50' />
+    </div>
+    <div id="ViewPort">
 
-        <div id="ViewPort">
-            
-         </div>
+    </div>
 
-    </body>
+</body>
+
 </html>
 
 <script>
     kinopoiskPic();
-function kinopoiskPic() {
-    let params = new URLSearchParams(document.location.search);
-    fins = params.get('id');
-    var req_out = document.getElementById('ViewPort');
-    $.ajaxSetup({timeout: 10000});
-    var finds = '';
-    $.get('https://api.allfilmbook.ru/kinopoisk/get/img/', {id: fins}).success(function (data) {
-        json = JSON.parse(data);
-        if (json.length === 0) {
-            // Display a placeholder image
-            req_out.innerHTML = "<img src='img/not.png' style=' width: 100%;' title='' />";
-        } else {
-        json.forEach(function (item, i, json) {
-            finds = finds + "<img src='" + item + "' style=' width: 100%;'  title=''>";
+    function kinopoiskPic() {
+        let params = new URLSearchParams(document.location.search);
+        fins = params.get('id');
+        var req_out = document.getElementById('ViewPort');
+        $.ajaxSetup({ timeout: 10000 });
+        var finds = '';
+        $.get('https://api.allfilmbook.ru/kinopoisk/get/img/', { id: fins }).success(function (data) {
+            json = JSON.parse(data);
+            if (json.length === 0) {
+                // Display a placeholder image
+                req_out.innerHTML = "<img src='img/not.png' style=' width: 100%;' title='' />";
+                    visualPanel.showNotification('Ничего не найдено');
+                    setTimeout(() => {visualPanel.goBack();}, 1000);
+            } else {
+                json.forEach(function (item, i, json) {
+                    finds = finds + "<img src='" + item + "' style=' width: 100%;'  title=''>";
+                })
+                req_out.innerHTML = finds;
+                finds = '';
+            }
         })
-        req_out.innerHTML = finds;
-        finds = '';
+
+
     }
-    })
 
-
-}
-/*
-document.addEventListener("backbutton", onBackKeyDown, false);
-function onBackKeyDown(e) {
-    e.preventDefault(); 
-    fins=getCookie('idFilmI');
-       location.href = "index.html#name_"+fins; 
-
-
-          }
-*/
-  </script>
+</script>

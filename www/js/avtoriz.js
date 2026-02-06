@@ -1,3 +1,6 @@
+var UserHash = cookie.getCookie("user_hash") || '';
+var UserName = cookie.getCookie("user_login") || '';
+
 ///----------------------------Добавляем  Пользователя---------------------------------
 function AddUser_ShowHide() { // Активировать Registration Добавление обьявление
     var ModalWindowView = document.getElementById('Registration_Head');
@@ -50,8 +53,8 @@ function AvtorizationPost() { // Отправить запрос
 
       dates = JSON.parse(data);
         if(dates.answer === 'Ok') {
-            setCookieMy("user_hash",dates.hash)
-            setCookieMy("user_name",login)
+            cookie.setCookieMy("user_hash",dates.hash)
+            cookie.setCookieMy("user_login",login)
             location.reload();
         
         }
@@ -61,16 +64,5 @@ function AvtorizationPost() { // Отправить запрос
 
 }
 
-
-
-    function GetCookie(cookie_name) // Получение куков
-    {
-      var results = document.cookie.match('(^|;) ?' + cookie_name + '=([^;]*)(;|$)');
-    
-      if (results)
-        return (unescape(results[2]));
-      else
-        return null;
-    }
     
     

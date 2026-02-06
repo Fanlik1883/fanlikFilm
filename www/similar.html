@@ -7,104 +7,22 @@
       
         <link rel="stylesheet" href="css/film.css?v=0.01">
         <script src="js/jquery.min.js"></script>
-<script src="js/all.js?v=0.001"></script>
-   
-        <script src="js/func.js?v=0.001"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/add.js"></script>
+        <script src="js/func.js?"></script>
         <script src="cordova.js"></script>
 
-        <title>Hello World</title>
+        <title>Похожие фильмы</title>
     </head>
     <body>
-
+    <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;">
+        <img src='img/back.png' id="bottonBack" width='50' height='50' />
+    </div>
         <div id="ViewPort">
             
          </div>
 
+         <script src="js/similar.js"></script>
  
-         <script>
-            kinopoiskSimilars();
-            function kinopoiskSimilars() {
-                let params = new URLSearchParams(document.location.search);
-                fins = params.get('id');
-                var req_out = document.getElementById('ViewPort');
-                $.ajaxSetup({timeout: 10000});
-                var finds = '';
-                $.get('https://api.allfilmbook.ru/kinopoisk/get/similars/', {id: fins}).success(function (data) {
-            
-                    json = JSON.parse(data);
-                    if (json.length === 0) {
-            // Display a placeholder image
-            req_out.innerHTML = "<img src='img/zero.jpg' style=' width: 100%;' title='' />";
-        } else {
-                    json.forEach(function (item, i, json) {
-                        let liLast = document.createElement('div');
-                        liLast.className = "MovieCardFace";
-                        liLast.id = 'Movie_'+item['filmId'];
-                        liLast.addEventListener('click', function() { showDesc(item['filmId']); });
-                        liLast.innerHTML = render.OutFilmTemplate(item);
-                        ViewPort.append(liLast); // вставить liLast в конец <ol>			
-                    })
-                }
-                })
-            
-            }
-            
-
-function GetDesc(n){
-
-    $.get('https://api.allfilmbook.ru/film/list/', { n: n}).done(function (data) {
-		json = JSON.parse(data);
-        if (json.length === 0) {
-                        req_out.innerHTML = "<img src='img/zero.jpg' style=' width: 100%;' title='' />";
-                    } else {
-                        
-        var req_out = document.getElementById('desc_'+n);
-		json.forEach(function (item, i, json) {
-
-            req_out.innerHTML=renderedClass.OutFilmData(item);
-            req_out.innerHTML +='</div>';
-            document.getElementById('overlay_'+item['kinopoiskId']).innerHTML= item['ratingKinopoisk']+" "+item['ratingImdb'];
-            document.getElementById("desc_"+item['kinopoiskId']).classList.remove("hide");
-            document.getElementById("desc_"+item['kinopoiskId']).classList.toggle("show");
-            document.getElementById("name_"+item['kinopoiskId']).classList.toggle("hide");
-		})
-
-    }
-
-
-
-	})
-
-
-}
-
-
-function showDesc (id){
-  
-    if(document.getElementById("desc_"+id).innerHTML==''){
-        GetDesc(id);
-    }else {
-
-        if(document.getElementById("desc_"+id).classList[1]=="hide"){
-            document.getElementById("desc_"+id).classList.remove("hide")
-            document.getElementById("desc_"+id).classList.toggle("show")
-            document.getElementById("name_"+id).classList.toggle("hide")
-
-        } else {
-            document.getElementById("desc_"+id).classList.remove("show")
-            document.getElementById("desc_"+id).classList.toggle("hide")
-            document.getElementById("name_"+id).classList.remove("hide")
-
-
-        }
-}
-}
-
-
-
-
-
-
-</script>
     </body>
 </html>

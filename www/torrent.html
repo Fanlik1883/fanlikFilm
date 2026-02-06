@@ -8,16 +8,24 @@
   <meta name="color-scheme" content="light dark">
   <link rel="stylesheet" href="css/film.css?v=0.01">
   <script src="js/jquery.min.js"></script>
-
+  <script src="js/func.js?"></script>
   <script src="cordova.js"></script>
 
   <title></title>
 </head>
 
 <body>
-  <button onclick="RenderTracker.hideConfigPanel()" class="dropbtn" style="width: 100%;height: 35px;font-size: 2em">Настроки</button>
+    <div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;">
+        <img src='img/back.png' id="bottonBack" width='50' height='50' />
+    </div>
+
+  <button onclick="RenderTracker.hideConfigPanel()" class="dropbtn" style="width: 100%;height: 35px;font-size: 2em">Настройки</button>
   <div style="display: none;" id="ConfigPanel">
-    <div  style="width: 100%;"">Название: <input type="text" id='FindString' value=""  style="width: 100%;font-size: 2em">Год: <input type="text" id='FindYear' value=""  style="width: 15%;font-size: 2em"></div>
+    <div  style="width: 100%;"">Название: 
+      <input type="text" id='FindString' value=""  style="width: 100%;font-size: 2em"><br>
+      <input type="text" id='FindStringEn' value=""  style="width: 100%;font-size: 2em">
+   <br>Год: <input type="text" id='FindYear' value=""  style="width: 15%;font-size: 2em"></div>
+   <br><div id="onlyRusDiv"><input type="checkbox" id="onlyRus" checked> Только Русские</div>
    <br>
 
   <select size="3" multiple  id='typeRequest'  style="width: 20%;font-size: 2em;">
@@ -40,7 +48,7 @@
     <option value="Jackett2">Rus+</option>
     <option value="JackettEng">Eng</option>
     <option selected value="Magnet">Magnet</option>
-    <option selected value="Rutracker">Rutracker</option>
+    <option value="Rutracker">Rutracker</option>
 
 
  
