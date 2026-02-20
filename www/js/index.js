@@ -73,7 +73,7 @@ class Films {
         this.TypeFilmIndex=parseInt(cookie.getCookie('TypeFilmIndex') || 0, 10);
         this.yearIndex=parseInt(cookie.getCookie('yearIndex') || 0, 10);
         this.tagIndex=parseInt(cookie.getCookie('tagIndex') || 0, 10);
-        this.list=parseInt(cookie.getCookie('SaveList') || 0, 10);
+        this.list=parseInt(cookie.getCookie('SaveList') || 1, 10);
         this.SaveiD=parseInt(cookie.getCookie('SaveiD') || 0, 10);
         this.ratingCritics=parseInt(cookie.getCookie('ratingCritics') || 0, 10);
         this.YearList = document.getElementById("year")
@@ -138,7 +138,7 @@ class Films {
         panel.SettingsPanelHide()
     }
 
-ListFilm(year = 0, list = 0, genres = '', text = '', TypeFilm = '',sortFilm=0) { 
+ListFilm(year = 0, list = 1, genres = '', text = '', TypeFilm = '',sortFilm=0) { 
     films.isLoad = 1;
     $.ajaxSetup({ timeout: 3000 });
     
@@ -261,9 +261,12 @@ films.setupEventpanel();
 
 
 if (!UserHash || !UserName) {	Avtorization_ShowHide();}
-
-
-films.ListFilm(films.year,films.list,films.tag,"","",films.ratingCritics);
+if(films.list>1){
+    films.ListFilm(films.year,films.list-1,films.tag,"","",films.ratingCritics);
+    films.ListFilm(films.year,films.list,films.tag,"","",films.ratingCritics);
+}else {
+    films.ListFilm(films.year,films.list,films.tag,"","",films.ratingCritics);
+}
 
 
 

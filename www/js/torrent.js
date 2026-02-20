@@ -7,6 +7,47 @@ class Rejects {
     this.finderSelect = document.getElementById("finder");
     this.ApiKeys = { 'Jackett': 'kh2xyu3wngydyxxbg1wa9xtgbozr9a4g', 'Jackett2': 'vz8j4dx3qaxj9uvw4wlaot0b88ad669s', 'JackettEng': 'f95hvcdjn0r6gexxk3y2n2cd5nzgz85c' };
   }
+
+  pushMagnetDownload(magentLink){
+    var error = '';
+    $.ajax({
+        url: 'https://api.allfilmbook.ru/torrent/api/torrents',
+        method: 'POST',
+        contentType: 'application/json',  
+        data: JSON.stringify({
+            magnet: magentLink
+        }),
+        success: function (response) {
+         showNotification("🚀 Закачка начата!")
+        },
+        error: function (xhr, status, error) {
+          errorCount++;
+
+          let errorMessage = 'Не удалось загрузить данные';
+          if (status === 'timeout') {
+            errorMessage = 'Таймаут запроса';
+          } else if (xhr.status === 401) {
+            errorMessage = 'Ошибка авторизации';
+          }
+
+          if (errorCount < 3) {
+            if (confirm(errorMessage + '. Повторить запрос?')) {
+               pushMagnetDownload(magentLink)
+            }
+          } else {
+            errorCount = 0;
+            alert('Нет доступа к API.');
+          }
+        },
+      });
+  }
+
+
+
+
+
+
+
   FindJackett(findText, findTextEng,findyear, adressRequest) {
     var apikey = this.ApiKeys[adressRequest];
     var apiUrl;
@@ -39,7 +80,19 @@ class Rejects {
           else {
             hash = item.MagnetUri;
           }
-          var name = item.Title;
+
+          function capitalizeWords(str) {
+            if (!str || typeof str !== 'string') return str;
+            
+            return str.split(' ')
+              .map(word => {
+                if (!word) return word;
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+              })
+              .join(' ');
+          }
+          var name =capitalizeWords(item.Title)
+        //  var name = item.Title;
           var seeders = item.Seeders;
           var leechers = item.Peers;
           var trackersChecked = item.trackersChecked;
@@ -208,20 +261,27 @@ class renderMagnet {
           return;
         }
       }
-      
+      const newItem = {
+        id: AnalisTracker.FindId,
+        headData: headData,
+        link: link,
+        title: item.name,
+        comments: comments
+      };
+      const addedIndex = AnalisTracker.dataSave.push(newItem) - 1;
       // Если все проверки пройдены - выводим элемент
       if (RenderTracker.platform === 'android') {
-        finds = finds + ' <tr class="' + HighLine + '"><td>' + headData + '</td><td>#<a href="#" onclick="DownloadSelectFile(\'' + link + '\')" title="' + description + '" >' + title + '</a></td><td>' + comments + '</td></tr>';
+        finds = finds + ' <tr class="' + HighLine + '"><td>' + headData + '</td><td>#<a href="#" onclick="DownloadSelectFile(\'' + link + '\','+addedIndex+')" title="' + description + '" >' + title + '</a></td><td><a href="#" onclick="RejectTracker.pushMagnetDownload(\'' + link + '\')">Скачать</></td><td>' + comments + '</td></tr>';
       }
       if (RenderTracker.platform === 'browser') {
-        finds = finds + ' <tr class="' + HighLine + '"><td>' + headData + '</td><td><a href="' + link + '" title="' + description + '">' + title + '</a></td><td>' + comments + '</td></tr>';
+        finds = finds + ' <tr class="' + HighLine + '"><td>' + headData + '</td><td><a href="' + link + '" onclick="magnetManager.selectMagnet('+addedIndex+')" title="' + description + '">' + title + '</a></td><td><a href="#" onclick="RejectTracker.pushMagnetDownload(\'' + link + '\')">Скачать</></td><td>' + comments + '</td></tr>';
       }
     });
 
     if (finds.length < 1) {
       finds = 'Ничего не найдено! Попробуйте без фильтров!';
     } else {
-      finds = '<table border=1 style="width: 100%;"><tr><td></td><td>Имя</td><td>seeders/leechers/Gb</td></tr>' + finds + '</table>';
+      finds = '<table border=1 style="width: 100%;"><tr><td></td><td>Имя</td><td>Скачать</td><td>seeders/leechers/Gb</td></tr>' + finds + '</table>';
     }
 
     ViewOutput.innerHTML = finds;
@@ -236,6 +296,7 @@ class renderMagnet {
 
 class Analis {
   constructor() {
+    this.dataSave=[];
     this.FindString = new URLSearchParams(document.location.search).get('q');
     this.FildFindString = document.getElementById("FindString")
     this.FildFindString.value = this.FindString;
@@ -243,7 +304,7 @@ class Analis {
     this.FildFindStringEng = document.getElementById("FindStringEn")
     this.FildFindStringEng.value = this.FindStringEng;
     this.FindYear = new URLSearchParams(document.location.search).get('year');
-    this.FindId = new URLSearchParams(document.location.search).get('id');
+    this.FindId = new URLSearchParams(document.location.search).get('id') || 999999;
     this.FildFindYear = document.getElementById("FindYear");
     this.FildFindYear.value = this.FindYear;
     this.FilterList = document.getElementById("FilterList");
@@ -254,12 +315,15 @@ class Analis {
     this.onlyRusDiv = document.getElementById('onlyRusDiv');
     this.elementsToSearch = ["RUS","Syncmer", "NewComers", "WStudio", "Dragon", "seleZen","Kinosvalka","rutracker", "fenix","LostFilm","Ultradox","RuDub","HDRezka","RHS","NewStudio","BaibaKo","AlexFilm", "IdeaFilm","SOFTBOX"];
     this.setupEventonlyRus()
+ 
+
 
 
 
 
   }
 
+ 
 
       setupEventonlyRus() {
         this.onlyRus.checked=Boolean(this.onlyRus);
@@ -273,6 +337,8 @@ class Analis {
 
 
     }
+
+
   isTypeSelected(inputValues) {
     const selectedOptions = Array.from(this.typeRequest.selectedOptions);
     const values = selectedOptions.map(option => parseInt(option.value, 10)).filter(value => !isNaN(value));
@@ -324,13 +390,377 @@ class Analis {
   }
 }
 
+class MagnetManager {
+  constructor() {
+    this.AllSelectMagnet = [];
+    this.loadFromLocalStorage();
+  }
+
+  renderMagnetTable() {
+    var $viewOutput = $('#ViewOutput');
+    $viewOutput.empty();
+    
+    if (!magnetManager.AllSelectMagnet || magnetManager.AllSelectMagnet.length === 0) {
+      $viewOutput.html('<div class="alert alert-info">Нет сохраненных magnet-ссылок</div>');
+      return;
+    }
+
+    // Группируем по id
+    var groupedData = {};
+    
+    magnetManager.AllSelectMagnet.forEach(function(item) {
+      var data = item[0];
+      var meta = item[1];
+      
+      if (!data || !meta || !data.id) return;
+      
+      if (!groupedData[data.id]) {
+        groupedData[data.id] = [];
+      }
+      
+      // Парсим дату для сортировки
+      var timestamp = magnetManager.parseDateString(meta.now);
+      
+      groupedData[data.id].push({
+        data: data,
+        meta: meta,
+        timestamp: timestamp
+      });
+    });
+
+    // Сортируем каждую группу по дате (новые сверху)
+    Object.keys(groupedData).forEach(function(id) {
+      groupedData[id].sort(function(a, b) {
+        return b.timestamp - a.timestamp;
+      });
+    });
+
+    // Сортируем группы по дате первого элемента
+    var sortedIds = Object.keys(groupedData).sort(function(idA, idB) {
+      return groupedData[idB][0].timestamp - groupedData[idA][0].timestamp;
+    });
+
+    var html = '';
+    
+    sortedIds.forEach(function(id, groupIndex) {
+      var group = groupedData[id];
+      if (group.length === 0) return;
+      
+      html += magnetManager.renderMagnetGroup(id, group, groupIndex);
+    });
+
+    $viewOutput.html(html || '<div class="alert alert-warning">Нет данных для отображения</div>');
+    
+    // Инициализируем обработчики событий
+    magnetManager.initMagnetEventHandlers();
+  }
+
+  renderMagnetGroup(id, items, groupIndex) {
+    var firstItem = items[0];
+    var hasMultiple = items.length > 1;
+    var isExpanded = groupIndex === 0; // Первая группа развернута по умолчанию
+
+    var html = '<div class="magnet-group" data-group-id="' + id + '">';
+    html += '<div class="group-header" data-toggle="group-' + id + '">';
+    html += '<div>';
+    html += '<span class="group-id">ID: ' + id + '</span>';
+    html += '<span class="group-count">' + items.length + '</span>';
+    html += '</div>';
+    html += '<div class="group-last-update">';
+    html += firstItem.meta.now;
+    html += '</div>';
+    html += '</div>';
+    
+    html += '<div class="group-content" id="group-' + id + '" style="' + (isExpanded ? '' : 'display: none;') + '">';
+    html += this.renderMagnetItem(firstItem, true, 0);
+    
+    if (hasMultiple) {
+      html += '<div class="collapsed-items" id="collapsed-' + id + '" style="' + (isExpanded ? '' : 'display: none;') + '">';
+      
+      for (var i = 1; i < items.length; i++) {
+        html += this.renderMagnetItem(items[i], false, i);
+      }
+      
+      html += '</div>';
+      html += '<div class="toggle-items">';
+      html += '<button class="toggle-btn" data-toggle="collapsed-' + id + '">';
+      html += (isExpanded ? 'Скрыть' : 'Показать') + ' остальные (' + (items.length - 1) + ')';
+      html += '</button>';
+      html += '</div>';
+    }
+    
+    html += '</div>';
+    html += '</div>';
+    
+    return html;
+  }
+
+  renderMagnetItem(item, isMain, index) {
+    var data = item.data;
+    var meta = item.meta;
+    var dateParts = meta.now.split(', ');
+    var datePart = dateParts[0] || '';
+    var timePart = dateParts[1] || '';
+    var itemClass = isMain ? 'main-item' : 'collapsed-item';
+    var title = this.escapeHtml(data.title);
+    var comments = this.escapeHtml(data.comments);
+    
+    var html = '<div class="' + itemClass + '" data-index="' + index + '">';
+    html += '<div class="magnet-date">';
+    html += '<span title="Время сохранения">' + datePart + ' в ' + timePart + '</span>';
+    
+    if (data.headData) {
+      html += ' | <span title="Дата релиза">' + data.headData + '</span>';
+    }
+    
+    html += '</div>';
+    html += '<a href="#" onclick="DownloadSelectFile(\'' + data.link  + '\',0)" class="magnet-title">';
+    html += title;
+    html += '</a>';
+    html += '<div class="magnet-comments">';
+    html += comments;
+    html += '</div>';
+    html += '</div>';
+    
+    return html;
+  }
+
+  initMagnetEventHandlers() {
+    var self = this;
+    
+    // Обработчики для заголовков групп
+    $(document).off('click', '.group-header').on('click', '.group-header', function() {
+      var groupId = $(this).data('toggle');
+      var $groupContent = $('#' + groupId);
+      var groupIdOnly = groupId.replace('group-', '');
+      var $collapsedItems = $('#collapsed-' + groupIdOnly);
+      var $toggleBtn = $(this).closest('.magnet-group').find('.toggle-btn');
+      
+      if ($groupContent.is(':visible')) {
+        $groupContent.slideUp(300);
+        $collapsedItems.slideUp(300);
+        if ($toggleBtn.length) {
+          $toggleBtn.text('Показать группу');
+        }
+      } else {
+        $groupContent.slideDown(300);
+        if ($collapsedItems.is(':visible')) {
+          $collapsedItems.slideDown(300);
+        }
+        if ($toggleBtn.length) {
+          $toggleBtn.text('Скрыть остальные');
+        }
+      }
+    });
+
+    // Обработчики для кнопок показа/скрытия
+    $(document).off('click', '.toggle-btn').on('click', '.toggle-btn', function(e) {
+      e.stopPropagation();
+      var targetId = $(this).data('toggle');
+      var $target = $('#' + targetId);
+      var isCollapsed = $target.is(':visible');
+      
+      if (isCollapsed) {
+        $target.slideUp(300);
+        $(this).text('Показать остальные');
+      } else {
+        $target.slideDown(300);
+        $(this).text('Скрыть остальные');
+      }
+    });
+  }
+
+  // Вспомогательные методы
+  parseDateString(dateStr) {
+    // Конвертируем "09.02.2026, 13:17:57" в Date
+    var match = dateStr.match(/(\d{2})\.(\d{2})\.(\d{4}), (\d{2}):(\d{2}):(\d{2})/);
+    if (match) {
+      var day = match[1];
+      var month = match[2];
+      var year = match[3];
+      var hour = match[4];
+      var minute = match[5];
+      var second = match[6];
+      return new Date(year + '-' + month + '-' + day + 'T' + hour + ':' + minute + ':' + second);
+    }
+    return new Date();
+  }
+
+  escapeHtml(text) {
+    if (!text) return '';
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Метод для форматирования даты с временем
+  formatDateTime(date) {
+    if (!date) {
+      date = new Date();
+    }
+    
+    // Используем toLocaleString с явными параметрами
+    var day = date.getDate().toString().padStart(2, '0');
+    var month = (date.getMonth() + 1).toString().padStart(2, '0');
+    var year = date.getFullYear();
+    var hours = date.getHours().toString().padStart(2, '0');
+    var minutes = date.getMinutes().toString().padStart(2, '0');
+    var seconds = date.getSeconds().toString().padStart(2, '0');
+    
+    return day + '.' + month + '.' + year + ', ' + hours + ':' + minutes + ':' + seconds;
+  }
+
+  // Метод для поиска индекса магнита по ссылке в данных
+  findMagnetIndexByUrl(data) {
+    for (var i = 0; i < this.AllSelectMagnet.length; i++) {
+      var item = this.AllSelectMagnet[i];
+      var storedData = item[0];
+      
+      // Проверяем наличие ссылки в данных
+      var storedUrl = storedData.url || storedData.link || 
+                     (typeof storedData === 'string' && storedData.startsWith('http') ? storedData : null);
+      
+      var newUrl = data.url || data.link || 
+                  (typeof data === 'string' && data.startsWith('http') ? data : null);
+      
+      // Если оба имеют ссылки и они совпадают
+      if (storedUrl && newUrl && storedUrl === newUrl) {
+        return i;
+      }
+      
+      // Дополнительная проверка: если данные полностью совпадают
+      if (JSON.stringify(storedData) === JSON.stringify(data)) {
+        return i;
+      }
+    }
+    
+    return -1;
+  }
+
+  // Проверка и добавление элемента с лимитом 99
+  selectMagnet(index) {
+    var data = AnalisTracker.dataSave[index];
+    // Создаем текущую дату в формате день.месяц.год
+    var now = { now: this.formatDateTime() };
+
+    // Ищем, есть ли уже такой магнит
+    var existingIndex = this.findMagnetIndexByUrl(data);
+    
+    if (existingIndex !== -1) {
+      // Найден существующий магнит - обновляем дату и перемещаем в начало
+      var existingMagnet = this.AllSelectMagnet[existingIndex];
+      
+      // Обновляем дату
+      existingMagnet[1] = now;
+
+      // Удаляем из текущей позиции
+      this.AllSelectMagnet.splice(existingIndex, 1);
+      
+      // Добавляем в начало
+      this.AllSelectMagnet.unshift(existingMagnet);
+    } else {
+      if (this.AllSelectMagnet.length >= 99) {
+        this.AllSelectMagnet.pop();
+      }
+      
+      // Добавляем новый элемент в начало массива
+      this.AllSelectMagnet.unshift([data, now]);
+    }
+    this.saveToLocalStorage();
+    
+    return this.AllSelectMagnet[0]; // Возвращаем добавленный элемент
+  }
+
+  // Метод для проверки наличия ссылки
+  hasMagnetWithUrl(url) {
+    for (var i = 0; i < this.AllSelectMagnet.length; i++) {
+      var item = this.AllSelectMagnet[i];
+      var storedData = item[0];
+      var storedUrl = storedData.url || storedData.link || 
+                     (typeof storedData === 'string' && storedData === url ? url : null);
+      
+      if (storedUrl === url) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  // Метод для получения магнита по ссылке
+  getMagnetByUrl(url) {
+    for (var i = 0; i < this.AllSelectMagnet.length; i++) {
+      var item = this.AllSelectMagnet[i];
+      var storedData = item[0];
+      var storedUrl = storedData.url || storedData.link || 
+                     (typeof storedData === 'string' && storedData === url ? url : null);
+      
+      if (storedUrl === url) {
+        return item;
+      }
+    }
+    
+    return null;
+  }
+
+  // Остальные методы
+  loadFromLocalStorage() {
+    try {
+      var storedData = localStorage.getItem('AllSelectMagnet');
+      if (storedData) {
+        this.AllSelectMagnet = JSON.parse(storedData);
+      } else {
+        this.AllSelectMagnet = [];
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке из LocalStorage:', error);
+      this.AllSelectMagnet = [];
+    }
+  }
+
+  saveToLocalStorage() {
+    try {
+      localStorage.setItem('AllSelectMagnet', JSON.stringify(this.AllSelectMagnet));
+    } catch (error) {
+      console.error('Ошибка при сохранении в LocalStorage:', error);
+    }
+  }
+
+  getMagnetCount() {
+    return this.AllSelectMagnet.length;
+  }
+
+  getAllMagnets() {
+    return this.AllSelectMagnet;
+  }
+
+  clearAllMagnets() {
+    this.AllSelectMagnet = [];
+    this.saveToLocalStorage();
+  }
+}
+
+
+
 AnalisTracker = new Analis();
 RejectTracker = new Rejects();
 RenderTracker = new renderMagnet();
+magnetManager = new MagnetManager();
 
-RejectTracker.FindJackett(AnalisTracker.FildFindString.value,AnalisTracker.FildFindStringEng.value, '', "Magnet");
+
+
+if (AnalisTracker.FildFindString.value || AnalisTracker.FildFindStringEng.value) {
+    RejectTracker.FindJackett(AnalisTracker.FildFindString.value,AnalisTracker.FildFindStringEng.value, '', "Magnet");
 //RejectTracker.FindJackett(AnalisTracker.FildFindString.value,'', AnalisTracker.FildFindYear.value, "Rutracker")
+} else {
 
+    if (typeof magnetManager !== 'undefined' && magnetManager.renderMagnetTable) {
+      magnetManager.renderMagnetTable();
+  } else {
+      alert('RenderTracker не инициализирован');
+  }
+
+}
 
 
 function checkMagnet(text) {
@@ -343,9 +773,13 @@ function checkMagnet(text) {
 }
 
 
-function DownloadSelectFile(url) {
+function DownloadSelectFile(url,index) {
+ 
   var $magnets = checkMagnet(url);
-  if ($magnets == 1) { openFileInExternalAppMagnet(url); return 0; }
+  if ($magnets == 1) { 
+    openFileInExternalAppMagnet(url);
+    if (index>0)  magnetManager.selectMagnet(index);
+    return 0; }
   function simpleHash() {
     var currentDate = new Date();
     fileURL = currentDate.getFullYear() + (currentDate.getMonth() + 1) + currentDate.getDate() + currentDate.getHours() + currentDate.getMinutes() + currentDate.getSeconds();
@@ -424,3 +858,4 @@ function showNotification(html) {
 function openExternalURL(url) {
   cordova.plugins.globalization.openURL(url);
 }
+var errorCount=0;

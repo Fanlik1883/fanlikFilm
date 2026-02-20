@@ -31,7 +31,7 @@ class Render {
         '<a href="similar.html?id='+idFilm+'" ><img src=\'img/similar.png\' class=\'bottons\'></a>'+
         '<a href="equel.html?id='+idFilm+'"><img  src=\'img/equel.png\' class=\'bottons\'></a>'+
         '<a href="img.html?id='+idFilm+'"><img  src=\'img/img.png\' class=\'bottons\'></a>'+
-        "<a href='torrent.html?q="+this.removeSymbols(item['nameRu'])+"&e="+this.removeSymbols(item['nameOriginal'])+"&year="+item['year']+"'><img  src='img/torrent.jpg' class='bottons'></a>";
+        "<a href='torrent.html?q="+this.removeSymbols(item['nameRu'])+"&e="+this.removeSymbols(item['nameOriginal'])+"&year="+item['year']+"&id="+idFilm+"'><img  src='img/torrent.jpg' class='bottons'></a>";
         
         if(favoryte==0)   
             tmp += '<img  src=\'img/add-icon-png-2468.png\' id="add_'+idFilm+'" onclick="choose.addFavorites('+idFilm+')" class=\'bottons\'>';
@@ -68,7 +68,7 @@ class VisualPanel {
 
     initBack(){
         this.bottonBack=document.getElementById('bottonBack');
-        this.bottonBack.addEventListener('click', this.goBack);
+        if(this.bottonBack) this.bottonBack.addEventListener('click', this.goBack);
 
     }
     goBack(){

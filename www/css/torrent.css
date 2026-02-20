@@ -1,0 +1,122 @@
+/* Стили для группировки магнетов */
+.magnet-group {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.group-header {
+    cursor: pointer;
+    background: #f0f0f0;
+    padding: 10px 15px;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.group-header:hover {
+    background-color: #e0e0e0 !important;
+}
+
+.group-content {
+    padding: 15px;
+    background-color: #fff;
+}
+
+.main-item {
+    margin: 10px 0;
+    padding: 12px;
+    border-left: 3px solid #007bff;
+    background-color: #f8f9fa;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.main-item:hover {
+    background-color: #e9ecef;
+}
+
+.collapsed-items {
+    margin-top: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.collapsed-item {
+    margin: 8px 0;
+    padding: 8px 10px;
+    border-left: 2px solid #6c757d;
+    background-color: #fafafa;
+    font-size: 0.9em;
+    opacity: 0.85;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.collapsed-item:hover {
+    opacity: 1;
+    background-color: #f0f0f0;
+}
+
+.toggle-items {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.toggle-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.toggle-btn:hover {
+    background-color: #5a6268;
+}
+
+.magnet-date {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+    font-family: monospace;
+}
+
+.magnet-comments {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.magnet-title {
+    display: block;
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.group-count {
+    background-color: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.group-id {
+    font-weight: bold;
+    color: #333;
+}
+
+.group-last-update {
+    color: #6c757d;
+    font-size: 13px;
+}
