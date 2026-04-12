@@ -1,0 +1,157 @@
+<!-- person-films.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/film.css?v=0.01">
+    <link rel="stylesheet" href="css/avtoriz.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/classes/Cookie.js"></script>
+    <script src="js/classes/FileStorage.js"></script>
+    <script src="js/init-auth.js"></script>
+    <script src="js/classes/UserAuth.js"></script>
+    <script src="js/classes/Render.js"></script>
+    <script src="js/classes/VisualPanel.js"></script>
+    <script src="js/classes/PanelImport.js"></script>
+    <script src="cordova.js"></script>
+    <title>Фильмы человека</title>
+</head>
+<body>
+<div width="19%" style="position: fixed; right: 10px;top: 10px;z-index: 10000;">
+    <img src='img/back.png' id="bottonBack" width='50' height='50' />
+</div>
+<div id="personInfo" style="margin: 20px; padding: 15px; background: #f8fafc; border-radius: 15px;"></div>
+<div id="ViewPort"></div>
+
+<script>
+    let personId = null;
+
+    function getPersonId() {
+        var params = new URLSearchParams(document.location.search);
+        return params.get('id');
+    }
+
+    function mapFilm(film) {
+        return {
+            kinopoiskId: film.filmId,
+            nameRu: film.nameRu,
+            nameOriginal: film.nameEn,
+            year: film.year || '',
+            ratingKinopoisk: parseFloat(film.ratingKinopoisk) || 0,
+            ratingImdb: parseFloat(film.ratingImdb) || 0,
+            ratingFilmCritics: 0,
+            filmLength: film.filmLength || 0,
+            countries: film.countries || '',
+            genres: film.genres || '',
+            description: film.filmDescription || ''
+        };
+    }
+
+    // Отображение фильмов (без пагинации)
+    function renderFilms(films) {
+        const container = document.getElementById('ViewPort');
+        container.innerHTML = '';
+
+        if (!films || films.length === 0) {
+            container.innerHTML = '<div class="alert alert-info">Нет фильмов для этого человека</div>';
+            return;
+        }
+
+        // Сортируем по рейтингу Кинопоиска (по убыванию)
+        films.sort((a, b) => (parseFloat(b.ratingKinopoisk) || 0) - (parseFloat(a.ratingKinopoisk) || 0));
+
+        films.forEach(film => {
+            const filmData = mapFilm(film);
+            const card = document.createElement('div');
+            card.className = 'MovieCardFace';
+            card.id = 'Movie_' + filmData.kinopoiskId;
+            card.setAttribute('onclick', `panelImport.showDesc(${filmData.kinopoiskId}, 1)`);
+            card.innerHTML = render.OutFilmTemplate(filmData, 1);
+            container.appendChild(card);
+
+            const overlay = document.getElementById('overlay_' + filmData.kinopoiskId);
+            if (overlay) {
+                const ratingKP = filmData.ratingKinopoisk ? filmData.ratingKinopoisk.toFixed(1) : '0';
+                const ratingIMDb = filmData.ratingImdb ? filmData.ratingImdb.toFixed(1) : '0';
+                overlay.innerHTML = ratingKP + '<br>' + ratingIMDb;
+            }
+        });
+    }
+
+    // Загрузка информации о человеке и его фильмов (один запрос)
+    function loadPersonInfo(personId) {
+        const apiUrl = 'https://api.allfilmbook.ru/kinopoisk/get/StaffPerson/?id=' + encodeURIComponent(personId);
+        
+        // Показываем индикатор загрузки в блоке фильмов
+        document.getElementById('ViewPort').innerHTML = '<div class="loading-indicator">Загрузка фильмов...</div>';
+        
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            dataType: 'json',
+            timeout: 10000,
+            success: function(response) {
+                if (!response || !response.nameRu) {
+                    document.getElementById('personInfo').innerHTML = '<div class="alert alert-warning">Информация о человеке не найдена</div>';
+                    document.getElementById('ViewPort').innerHTML = '<div class="alert alert-warning">Нет данных о фильмах</div>';
+                    return;
+                }
+
+                // Отображаем информацию о человеке
+                const person = response;
+                const name = person.nameRu || person.nameEn || 'Без имени';
+                const profession = person.profession || '';
+                const ratingKP = person.ratingKinopoisk || 0;
+                const ratingIMDb = person.rating_imdb || 0;
+                const ratingText = `КП: ${ratingKP} | IMDb: ${ratingIMDb}`;
+                const imgSrc = person.posterUrl || 'img/no-photo.png';
+                const birthday = person.birthday ? new Date(person.birthday).toLocaleDateString() : '—';
+                const age = person.age ? person.age + ' лет' : '';
+                const growth = person.growth ? person.growth + ' см' : '';
+
+                document.getElementById('personInfo').innerHTML = `
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <img src="${imgSrc}" alt="${name}" style="width: 150px; border-radius: 10px; object-fit: cover;">
+                        <div style="flex:1;">
+                            <h2>${escapeHtml(name)}</h2>
+                            <p><strong>Профессия:</strong> ${escapeHtml(profession)}</p>
+                            <p><strong>Рейтинг:</strong> ${ratingText}</p>
+                            <p><strong>Дата рождения:</strong> ${birthday} ${age}</p>
+                            <p><strong>Рост:</strong> ${growth}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Отображаем фильмы из того же ответа
+                renderFilms(response.films);
+            },
+            error: function() {
+                document.getElementById('personInfo').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных о человеке</div>';
+                document.getElementById('ViewPort').innerHTML = '<div class="alert alert-danger">Ошибка загрузки фильмов</div>';
+            }
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        personId = getPersonId();
+        if (!personId) {
+            document.getElementById('personInfo').innerHTML = '<div class="alert alert-danger">Не указан ID человека</div>';
+            visualPanel.showNotification('ID не задан');
+            return;
+        }
+
+        loadPersonInfo(personId);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="stylesheet" href="css/film.css?v=0.01">
+    <link rel="stylesheet" href="css/avtoriz.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/classes/Cookie.js"></script>
+    <script src="js/classes/FileStorage.js"></script>
+    <script src="js/init-auth.js"></script>
+    <script src="js/classes/UserAuth.js"></script>
+    <script src="js/classes/Render.js"></script>
+    <script src="js/classes/VisualPanel.js"></script>
+    <script src="js/classes/PanelImport.js"></script>
+    <script src="js/classes/Choose.js"></script>
+    <script src="cordova.js"></script>
+    <title>Список людей</title>
+</head>
+<body>
+
+<div width="19%" style="position: fixed; right: 10px; top: 10px; z-index: 10000;">
+    <img src='img/back.png' id="bottonBack" width='50' height='50' />
+</div>
+
+<div class="profession-filters" id="professionFilters"></div>
+<div class="search-box" id="searchBox">
+    <input type="text" id="searchInput" placeholder="Поиск по имени (рус, eng)..." />
+    <button id="searchButton">Найти</button>
+    <button id="clearSearchButton" class="clear-btn">Сброс</button>
+</div>
+<div id="ViewPort"></div>
+
+<script>
+    // Вспомогательная функция экранирования HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#39;');
+    }
+
+    // Маппинг professionKey на русские названия
+    const professionMapping = {
+        "actor": "Актер",
+        "actress": "Актриса",
+        "director": "Режиссер",
+        "writer": "Сценарист",
+        "producer": "Продюсер",
+        "composer": "Композитор",
+        "operator": "Оператор",
+        "editor": "Монтажер",
+        "design": "Художник-постановщик",
+        "voice": "Озвучка",
+        "themselves": "Группа: играют самих себя",
+        "director_film": "Директор фильма",
+        "translator": "Переводчик"
+    };
+
+    function getRussianProfession(profKey) {
+        return professionMapping[profKey] || profKey;
+    }
+
+    // Получаем параметры URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const filmId = urlParams.get('id');
+
+    // Режим: если есть filmId, загружаем людей фильма
+    if (filmId) {
+        let filmPersons = [];        // все люди фильма
+        let currentProfession = "";  // выбранная профессия ("" = все)
+
+        // Функция загрузки людей фильма
+        function loadFilmPersons() {
+            const container = document.getElementById('ViewPort');
+            container.innerHTML = '<div class="loading-indicator">Загрузка...</div>';
+
+            $.ajax({
+                url: 'https://api.allfilmbook.ru/kinopoisk/get/staff/',
+                method: 'GET',
+                data: { id: filmId },
+                dataType: 'json',
+                timeout: 10000,
+                success: function(data) {
+                    if (!data || data.length === 0) {
+                        container.innerHTML = "<img src='img/zero.jpg' style='width: 100%;' title='Нет данных' />";
+                        if (typeof visualPanel !== 'undefined') visualPanel.showNotification('Люди не найдены');
+                        return;
+                    }
+                    filmPersons = data;
+                    // Построить кнопки профессий на основе данных
+                    buildProfessionButtonsFromPersons(filmPersons);
+                    // Отобразить всех (без фильтра)
+                    renderPersons(filmPersons);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading film persons:', error);
+                    container.innerHTML = "<img src='img/zero.jpg' style='width: 100%;' title='Ошибка загрузки' />";
+                    if (typeof visualPanel !== 'undefined') {
+                        visualPanel.showNotification('Ошибка загрузки списка людей фильма');
+                    }
+                }
+            });
+        }
+
+        // Построить кнопки фильтрации на основе профессий из полученных данных
+        function buildProfessionButtonsFromPersons(persons) {
+            const container = document.getElementById('professionFilters');
+            container.innerHTML = '';
+
+            // Собираем уникальные professionKey
+            const professionsSet = new Set();
+            persons.forEach(person => {
+                if (person.professionKey) {
+                    professionsSet.add(person.professionKey);
+                }
+            });
+            const professions = Array.from(professionsSet).sort();
+
+            // Кнопка "Все"
+            const allBtn = document.createElement('button');
+            allBtn.textContent = 'Все';
+            allBtn.dataset.prof = '';
+            allBtn.addEventListener('click', () => {
+                setProfessionFilter('');
+            });
+            container.appendChild(allBtn);
+
+            // Кнопки для каждой профессии (с русским названием)
+            professions.forEach(profKey => {
+                const btn = document.createElement('button');
+                btn.textContent = getRussianProfession(profKey);
+                btn.dataset.prof = profKey;   // храним исходный ключ
+                btn.addEventListener('click', () => {
+                    setProfessionFilter(profKey);
+                });
+                container.appendChild(btn);
+            });
+
+            // Активировать кнопку "Все" по умолчанию
+            highlightActiveButton('');
+        }
+
+        function setProfessionFilter(prof) {
+            if (currentProfession === prof) return;
+            currentProfession = prof;
+            highlightActiveButton(prof);
+            // Фильтруем filmPersons по professionKey
+            const filtered = prof === '' ? filmPersons : filmPersons.filter(p => p.professionKey === prof);
+            renderPersons(filtered);
+        }
+
+        function highlightActiveButton(prof) {
+            const btns = document.querySelectorAll('#professionFilters button');
+            btns.forEach(btn => {
+                if (btn.dataset.prof === prof) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function renderPersons(persons) {
+            const container = document.getElementById('ViewPort');
+            container.innerHTML = '';
+            if (persons.length === 0) {
+                container.innerHTML = "<img src='img/zero.jpg' style='width: 100%;' title='Нет данных' />";
+                if (typeof visualPanel !== 'undefined') visualPanel.showNotification('Нет людей с выбранной профессией');
+                return;
+            }
+
+            persons.forEach(person => {
+                const card = document.createElement('div');
+                card.className = 'MovieCardFace';
+                card.setAttribute('data-person-id', person.staffId);
+                card.onclick = function() {
+                    window.location.href = 'person-films.html?id=' + person.staffId;
+                };
+
+                const name = person.nameRu || person.nameEn || 'Без имени';
+                const professionKey = person.professionKey || '';
+                const professionRu = getRussianProfession(professionKey);
+                const ratingKP = person.ratingKinopoisk || 0;
+                const ratingIMDb = person.ratingImdb || 0;
+
+                let ratingText = '';
+                if (ratingKP) ratingText += 'КП: ' + ratingKP;
+                if (ratingIMDb) ratingText += (ratingText ? ' | ' : '') + 'IMDb: ' + ratingIMDb;
+
+                const imgSrc = person.posterUrl || 'img/no-photo.png';
+
+                card.innerHTML = `
+                    <img src="${imgSrc}" alt="${escapeHtml(name)}" class="MovesPicFace">
+                    <div class="short-infobar">
+                        <span class="short-quality">${escapeHtml(name)}</span><br>
+                        <span style="font-size:12px;">${escapeHtml(professionRu)}</span>
+                    </div>
+                    <div class="overlay">${ratingText}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Скрываем поисковую строку в режиме фильма (она не нужна)
+        const searchBox = document.getElementById('searchBox');
+        if (searchBox) searchBox.style.display = 'none';
+
+        // Запускаем загрузку
+        loadFilmPersons();
+    } else {
+        // Режим: все люди (с пагинацией и фильтрацией на сервере)
+        // Основные отдельные профессии (без привязки к полу)
+        const uniqueProfessions = [
+            "Актер",
+            "Актриса",
+            "Режиссер",
+            "Сценарист",
+            "Продюсер",
+            "Композитор",
+            "Оператор",
+            "Монтажер",
+            "Художник-постановщик",
+            "Озвучка",
+            "Группа: играют самих себя",
+            "Директор фильма",
+            "Переводчик"
+        ];
+
+        // Переменные пагинации
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+        let currentProfession = "";   // пустая строка = все
+        let currentSearch = "";       // текущий поисковый запрос
+        const limit = 20;
+
+        // Генерация кнопок фильтрации профессий
+        function buildFilterButtons() {
+            const container = document.getElementById('professionFilters');
+            container.innerHTML = '';
+
+            // Кнопка "Все" (сброс фильтра)
+            const allBtn = document.createElement('button');
+            allBtn.textContent = 'Все';
+            allBtn.dataset.prof = '';
+            allBtn.addEventListener('click', () => setProfessionFilter(''));
+            container.appendChild(allBtn);
+
+            // Кнопки для каждой профессии
+            uniqueProfessions.forEach(prof => {
+                const btn = document.createElement('button');
+                btn.textContent = prof;
+                btn.dataset.prof = prof;
+                btn.addEventListener('click', () => setProfessionFilter(prof));
+                container.appendChild(btn);
+            });
+        }
+
+        function highlightActiveButton(prof) {
+            const btns = document.querySelectorAll('#professionFilters button');
+            btns.forEach(btn => {
+                if (btn.dataset.prof === prof) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function setProfessionFilter(prof) {
+            if (currentProfession === prof) return;
+            currentProfession = prof;
+            currentPage = 1;
+            hasMore = true;
+            isLoading = false;
+
+            const container = document.getElementById('ViewPort');
+            container.innerHTML = '';
+            const oldLoading = document.getElementById('loading-indicator');
+            if (oldLoading) oldLoading.remove();
+
+            highlightActiveButton(prof);
+            loadPersons(currentPage, false);
+        }
+
+        // Функция для выполнения поиска
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const newSearch = searchInput.value.trim();
+            if (newSearch === currentSearch) return; // без изменений
+            currentSearch = newSearch;
+            currentPage = 1;
+            hasMore = true;
+            isLoading = false;
+
+            const container = document.getElementById('ViewPort');
+            container.innerHTML = '';
+            const oldLoading = document.getElementById('loading-indicator');
+            if (oldLoading) oldLoading.remove();
+
+            loadPersons(currentPage, false);
+        }
+
+        // Сброс поиска
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput.value.trim() === '' && currentSearch === '') return;
+            searchInput.value = '';
+            currentSearch = '';
+            currentPage = 1;
+            hasMore = true;
+            isLoading = false;
+
+            const container = document.getElementById('ViewPort');
+            container.innerHTML = '';
+            const oldLoading = document.getElementById('loading-indicator');
+            if (oldLoading) oldLoading.remove();
+
+            loadPersons(currentPage, false);
+        }
+
+        function loadPersons(page = 1, append = false) {
+            if (isLoading) return;
+            isLoading = true;
+
+            let loadingDiv = document.getElementById('loading-indicator');
+            if (!loadingDiv && append) {
+                loadingDiv = document.createElement('div');
+                loadingDiv.id = 'loading-indicator';
+                loadingDiv.className = 'loading-indicator';
+                loadingDiv.innerText = 'Загрузка...';
+                document.getElementById('ViewPort').appendChild(loadingDiv);
+            } else if (loadingDiv) {
+                loadingDiv.style.display = 'block';
+            }
+
+            let url = 'https://api.allfilmbook.ru/kinopoisk/get/StaffPerson/?page=' + page + '&limit=' + limit;
+            if (currentProfession) {
+                url += '&profession=' + encodeURIComponent(currentProfession);
+            }
+            if (currentSearch) {
+                url += '&search=' + encodeURIComponent(currentSearch);
+            }
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                dataType: 'json',
+                timeout: 10000,
+                success: function(data) {
+                    if (!data || !data.data || data.data.length === 0) {
+                        hasMore = false;
+                        if (!append) {
+                            document.getElementById('ViewPort').innerHTML = "<img src='img/zero.jpg' style='width: 100%;' title='Нет данных' />";
+                            if (typeof visualPanel !== 'undefined') visualPanel.showNotification('Люди не найдены');
+                        }
+                        isLoading = false;
+                        if (loadingDiv) loadingDiv.remove();
+                        if (hasMore === false && append) {
+                            const noMoreDiv = document.createElement('div');
+                            noMoreDiv.className = 'no-more';
+                            noMoreDiv.innerText = 'Больше нет данных';
+                            document.getElementById('ViewPort').appendChild(noMoreDiv);
+                        }
+                        return;
+                    }
+
+                    const container = document.getElementById('ViewPort');
+                    if (!append) {
+                        container.innerHTML = '';
+                    }
+
+                    data.data.forEach(function(person) {
+                        const card = document.createElement('div');
+                        card.className = 'MovieCardFace';
+                        card.setAttribute('data-person-id', person.person_id);
+                        card.onclick = function() {
+                            window.location.href = 'person-films.html?id=' + person.person_id;
+                        };
+
+                        const name = person.name_ru || person.name_en || 'Без имени';
+                        const profession = person.profession || '';
+                        const ratingKP = person.ratingKinopoisk || 0;
+                        const ratingIMDb = person.rating_imdb || 0;
+
+                        let ratingText = '';
+                        if (ratingKP) ratingText += 'КП: ' + ratingKP;
+                        if (ratingIMDb) ratingText += (ratingText ? ' | ' : '') + 'IMDb: ' + ratingIMDb;
+
+                        const imgSrc = person.poster_url || 'img/no-photo.png';
+
+                        card.innerHTML = `
+                            <img src="${imgSrc}" alt="${escapeHtml(name)}" class="MovesPicFace">
+                            <div class="short-infobar">
+                                <span class="short-quality">${escapeHtml(name)}</span><br>
+                                <span style="font-size:12px;">${escapeHtml(profession)}</span>
+                            </div>
+                            <div class="overlay">${ratingText}</div>
+                        `;
+                        container.appendChild(card);
+                    });
+
+                    const totalPages = data.pages || Math.ceil(data.total / limit);
+                    if (page >= totalPages) {
+                        hasMore = false;
+                        const noMoreDiv = document.createElement('div');
+                        noMoreDiv.className = 'no-more';
+                        noMoreDiv.innerText = 'Больше нет данных';
+                        container.appendChild(noMoreDiv);
+                    } else {
+                        hasMore = true;
+                    }
+
+                    isLoading = false;
+                    if (loadingDiv) loadingDiv.remove();
+                    if (!append) {
+                        currentPage = page;
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading persons:', error);
+                    if (!append) {
+                        document.getElementById('ViewPort').innerHTML = "<img src='img/zero.jpg' style='width: 100%;' title='Ошибка загрузки' />";
+                    }
+                    if (typeof visualPanel !== 'undefined') {
+                        visualPanel.showNotification('Ошибка загрузки списка людей');
+                    }
+                    isLoading = false;
+                    if (loadingDiv) loadingDiv.remove();
+                }
+            });
+        }
+
+        function handleScroll() {
+            if (!hasMore || isLoading) return;
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const threshold = document.body.offsetHeight - 500;
+            if (scrollPosition >= threshold) {
+                currentPage++;
+                loadPersons(currentPage, true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            buildFilterButtons();
+            highlightActiveButton('');
+            // Инициализация поисковых элементов
+            const searchBtn = document.getElementById('searchButton');
+            const clearBtn = document.getElementById('clearSearchButton');
+            const searchInput = document.getElementById('searchInput');
+
+            if (searchBtn) {
+                searchBtn.addEventListener('click', performSearch);
+            }
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearSearch);
+            }
+            if (searchInput) {
+                // Поиск при нажатии Enter
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+
+            loadPersons(1, false);
+            window.addEventListener('scroll', handleScroll);
+        });
+    }
+</script>
+</body>
+</html>
